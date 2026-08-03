@@ -10,7 +10,7 @@ const checkPermissions = function (permission){
             }
             const userId = user.id;
             
-            const foundUser = await userModel.findById(userId)
+            const foundUser = await userModel.findById(userId).populate("roleId")
             if(!foundUser){
                 return res.status(404).send("Cannot find this user")
             }

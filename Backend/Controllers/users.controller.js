@@ -20,10 +20,10 @@ const getUsers = ((req, res)=>{
 
 //Get User By ID 
 const getUserById = ((req, res)=>{
-    userId = req.params.id;
+    const userId = req.params.id;
     userModel.findById(userId).then((user)=>{
         if(!user){
-            res.status(404).send("User Not Found, Please Try Again")
+           return res.status(404).send("User Not Found, Please Try Again")
         }
         res.status(200).send(
             {
@@ -87,7 +87,7 @@ const login = ((req, res)=>{
 
             var token = jwt.sign(
                 {id: user._id, email: user.email },
-                process.env.JWT_SECRET,
+                    process.env.JWT_SECRET,{expiresIn: "1h"},
             );
             res.status(200).send({
                 message : "Login Successfully",
