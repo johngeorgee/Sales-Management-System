@@ -2,11 +2,11 @@ const mongoose = require("mongoose")
 const { Schema } = mongoose 
 
 const orderSchema = new Schema({
-    customerId : {
+    customerRef : {
         type: Schema.Types.ObjectId,
-        ref: "customer"
+        ref: "customers"
     },
-    shippingId : {
+    shippingRef : {
         type: Schema.Types.ObjectId,
         ref: "shipping"
     },

@@ -3,11 +3,11 @@ const { Int32 } = require("mongoose/lib/schema/index")
 const { Schema } = mongoose 
 
 const orderListSchema = new Schema({
-    orderId : {
+    orderRef : {
         type: Schema.Types.ObjectId,
         ref: "orders"
     },
-    productId : {
+    productRef : {
         type: Schema.Types.ObjectId,
         ref: "products"
     },
@@ -23,8 +23,7 @@ const orderListSchema = new Schema({
     },
     productDiscount : {
         type: Number,
-        min: 0,
-        max: 1
+        min: 0
     },
     productDiscountRate : Number,
     profitRatio : {
