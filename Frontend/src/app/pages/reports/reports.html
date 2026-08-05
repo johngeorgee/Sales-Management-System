@@ -1,0 +1,435 @@
+<div class="max-w-7xl mx-auto space-y-6 p-4">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900">Reports & Analytics</h1>
+        <p class="text-sm text-gray-500 mt-1">Analyze sales, customers, inventory, purchases and shipping performance.</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button mat-stroked-button [matMenuTriggerFor]="exportMenu" class="bg-white">
+          <mat-icon>download</mat-icon> Export
+        </button>
+        <mat-menu #exportMenu="matMenu">
+          <button mat-menu-item>Export PDF</button>
+          <button mat-menu-item>Export Excel</button>
+          <button mat-menu-item>Export CSV</button>
+        </mat-menu>
+        <button mat-flat-button color="primary" (click)="printReport()">
+          <mat-icon>print</mat-icon> Print Report
+        </button>
+      </div>
+    </div>
+
+    <!-- Global Filters -->
+    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 bg-gray-50 p-4 rounded-lg">
+      <mat-form-field appearance="outline">
+        <mat-label>Date Range</mat-label>
+        <mat-select [(value)]="filter.dateRange">
+          <mat-option *ngFor="let opt of dateRanges" [value]="opt">{{opt}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Market</mat-label>
+        <mat-select [(value)]="filter.market">
+          <mat-option *ngFor="let m of markets" [value]="m">{{m}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Customer Segment</mat-label>
+        <mat-select [(value)]="filter.segment">
+          <mat-option *ngFor="let s of segments" [value]="s">{{s}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button mat-stroked-button color="warn" (click)="clearFilters()" class="self-end">Clear Filters</button>
+    </div>
+
+    <!-- Sales Overview KPIs -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <mat-card class="!shadow-sm border border-gray-100 !rounded-xl" *ngFor="let kpi of salesKpis">
+        <mat-card-content class="p-6">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-sm font-medium text-gray-500 mb-1">{{kpi.title}}</p>
+              <h3 class="text-3xl font-bold text-gray-900">{{kpi.value}}</h3>
+            </div>
+            <div class="p-2 bg-blue-50 rounded-lg text-blue-600">
+              <mat-icon>{{kpi.icon}}</mat-icon>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Sales Trend Chart -->
+    <mat-card class="!shadow-sm border border-gray-100 !rounded-xl">
+      <mat-card-header>
+        <mat-card-title class="text-lg font-semibold text-gray-800">Sales Trend</mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="p-4">
+        <div class="h-72 w-full">
+          <canvas baseChart
+            [data]="salesTrendData"
+            [options]="lineChartOptions"
+            [type]="'line'">
+          </canvas>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Sales by Category & Market -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <mat-card class="!shadow-sm border border-gray-100 !rounded-xl">
+        <mat-card-header>
+          <mat-card-title class="text-lg font-semibold text-gray-800">Sales by Category</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="p-4">
+          <div class="h-72 w-full">
+            <canvas baseChart
+              [data]="salesByCategoryData"
+              [options]="barChartOptions"
+              [type]="'bar'">
+            </canvas>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="!shadow-sm border border-gray-100 !rounded-xl">
+        <mat-card-header>
+          <mat-card-title class="text-lg font-semibold text-gray-800">Sales by Market</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="p-4">
+          <div class="h-72 w-full">
+            <canvas baseChart
+              [data]="salesByMarketData"
+              [options]="doughnutChartOptions"
+              [type]="'doughnut'">
+            </canvas>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Order Analytics -->
+    <div class="mt-8">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Order Analytics</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <mat-card class="!shadow-sm border border-gray-100 !rounded-xl" *ngFor="let kpi of orderKpis">
+          <mat-card-content class="p-6">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-sm font-medium text-gray-500 mb-1">{{kpi.title}}</p>
+                <h3 class="text-3xl font-bold text-gray-900">{{kpi.value}}</h3>
+              </div>
+              <div class="p-2 bg-blue-50 rounded-lg text-blue-600">
+                <mat-icon>{{kpi.icon}}</mat-icon>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <mat-card class="!shadow-sm border border-gray-100 !rounded-xl mt-4">
+        <mat-card-header>
+          <mat-card-title class="text-lg font-semibold text-gray-800">Orders by Status</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="p-4">
+          <div class="h-72 w-full">
+            <canvas baseChart
+              [data]="ordersByStatusData"
+              [options]="doughnutChartOptions"
+              [type]="'doughnut'">
+            </canvas>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Customer Analytics -->
+    <div class="mt-8">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Customer Analytics</h2>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <mat-card class="!shadow-sm border border-gray-100 !rounded-xl">
+          <mat-card-header>
+            <mat-card-title class="text-lg font-semibold text-gray-800">Customer Segments</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="p-4">
+            <div class="h-72 w-full">
+              <canvas baseChart
+                [data]="customerSegmentsData"
+                [options]="doughnutChartOptions"
+                [type]="'doughnut'">
+              </canvas>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="!shadow-sm border border-gray-100 !rounded-xl overflow-hidden">
+          <mat-card-header>
+            <mat-card-title class="text-lg font-semibold text-gray-800">Top Customers</mat-card-title>
+          </mat-card-header>
+          <div class="overflow-x-auto w-full">
+            <table mat-table [dataSource]="topCustomers || []" class="w-full min-w-[600px]">
+              <ng-container matColumnDef="customer">
+                <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-600">Customer</th>
+                <td mat-cell *matCellDef="let c" class="text-sm font-medium text-gray-900">{{c.name}}</td>
+              </ng-container>
+              <ng-container matColumnDef="orders">
+                <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-600">Orders</th>
+                <td mat-cell *matCellDef="let c" class="text-gray-800">{{c.orders}}</td>
+              </ng-container>
+              <ng-container matColumnDef="sales">
+                <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-600">Total Sales</th>
+                <td mat-cell *matCellDef="let c" class="text-gray-800">{{c.sales}}</td>
+              </ng-container>
+              <ng-container matColumnDef="avg">
+                <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-600">Average Order</th>
+                <td mat-cell *matCellDef="let c" class="text-gray-800">{{c.avg}}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="customerColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: customerColumns;" class="hover:bg-gray-50"></tr>
+            </table>
+          </div>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Product Performance -->
+    <div class="mt-8">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Product Performance</h2>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <mat-card class="!shadow-sm border border-gray-100 !rounded-xl">
+          <mat-card-header>
+            <mat-card-title class="text-lg font-semibold text-gray-800">Top Selling Products</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="p-4">
+            <div class="h-72 w-full">
+              <canvas baseChart
+                [data]="topProductsChartData"
+                [options]="horizontalBarOptions"
+                [type]="'bar'">
+              </canvas>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="!shadow-sm border border-gray-100 !rounded-xl overflow-hidden">
+          <mat-card-header>
+            <mat-card-title class="text-lg font-semibold text-gray-800">Top Products by Revenue</mat-card-title>
+          </mat-card-header>
+          <div class="overflow-x-auto w-full">
+            <table mat-table [dataSource]="topProductsTable || []" class="w-full min-w-[800px]">
+              <ng-container matColumnDef="product">
+                <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-600">Product</th>
+                <td mat-cell *matCellDef="let p" class="text-sm font-medium text-gray-900">{{p.name}}</td>
+              </ng-container>
+              <ng-container matColumnDef="category">
+                <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-600">Category</th>
+                <td mat-cell *matCellDef="let p" class="text-gray-800">{{p.category}}</td>
+              </ng-container>
+              <ng-container matColumnDef="units">
+                <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-600">Units Sold</th>
+                <td mat-cell *matCellDef="let p" class="text-gray-800">{{p.units}}</td>
+              </ng-container>
+              <ng-container matColumnDef="revenue">
+                <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-600">Revenue</th>
+                <td mat-cell *matCellDef="let p" class="text-gray-800">{{p.revenue}}</td>
+              </ng-container>
+              <ng-container matColumnDef="discount">
+                <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-600">Discount</th>
+                <td mat-cell *matCellDef="let p" class="text-gray-800">{{p.discount}}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="productColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: productColumns;" class="hover:bg-gray-50"></tr>
+            </table>
+          </div>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Inventory Analytics -->
+    <div class="mt-8">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Inventory Analytics</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <mat-card class="!shadow-sm border border-gray-100 !rounded-xl" *ngFor="let kpi of inventoryKpis">
+          <mat-card-content class="p-6">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-sm font-medium text-gray-500 mb-1">{{kpi.title}}</p>
+                <h3 class="text-3xl font-bold text-gray-900">{{kpi.value}}</h3>
+              </div>
+              <div class="p-2 bg-blue-50 rounded-lg text-blue-600">
+                <mat-icon>{{kpi.icon}}</mat-icon>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
+        <mat-card class="!shadow-sm border border-gray-100 !rounded-xl">
+          <mat-card-header>
+            <mat-card-title class="text-lg font-semibold text-gray-800">Stock Status</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="p-4">
+            <div class="h-72 w-full">
+              <canvas baseChart
+                [data]="stockStatusData"
+                [options]="doughnutChartOptions"
+                [type]="'doughnut'">
+              </canvas>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        <mat-card class="!shadow-sm border border-gray-100 !rounded-xl overflow-hidden">
+          <mat-card-header>
+            <mat-card-title class="text-lg font-semibold text-gray-800">Low Stock Products</mat-card-title>
+          </mat-card-header>
+          <div class="overflow-x-auto w-full">
+            <table mat-table [dataSource]="lowStockProducts || []" class="w-full min-w-[600px]">
+              <ng-container matColumnDef="product">
+                <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-600">Product</th>
+                <td mat-cell *matCellDef="let p" class="text-sm font-medium text-gray-900">{{p.name}}</td>
+              </ng-container>
+              <ng-container matColumnDef="stock">
+                <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-600">Current Stock</th>
+                <td mat-cell *matCellDef="let p" class="text-gray-800">{{p.stock}}</td>
+              </ng-container>
+              <ng-container matColumnDef="reorder">
+                <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-600">Reorder Level</th>
+                <td mat-cell *matCellDef="let p" class="text-gray-800">{{p.reorder}}</td>
+              </ng-container>
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-600">Status</th>
+                <td mat-cell *matCellDef="let p" class="text-gray-800">{{p.status}}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="lowStockColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: lowStockColumns;" class="hover:bg-gray-50"></tr>
+            </table>
+          </div>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Purchase Analytics -->
+    <div class="mt-8">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Purchase Analytics</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <mat-card class="!shadow-sm border border-gray-100 !rounded-xl" *ngFor="let kpi of purchaseKpis">
+          <mat-card-content class="p-6">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-sm font-medium text-gray-500 mb-1">{{kpi.title}}</p>
+                <h3 class="text-3xl font-bold text-gray-900">{{kpi.value}}</h3>
+              </div>
+              <div class="p-2 bg-blue-50 rounded-lg text-blue-600">
+                <mat-icon>{{kpi.icon}}</mat-icon>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
+        <mat-card class="!shadow-sm border border-gray-100 !rounded-xl">
+          <mat-card-header>
+            <mat-card-title class="text-lg font-semibold text-gray-800">Purchase Trend</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="p-4">
+            <div class="h-72 w-full">
+              <canvas baseChart
+                [data]="purchaseTrendData"
+                [options]="lineChartOptions"
+                [type]="'line'">
+              </canvas>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        <mat-card class="!shadow-sm border border-gray-100 !rounded-xl">
+          <mat-card-header>
+            <mat-card-title class="text-lg font-semibold text-gray-800">Purchase Status</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="p-4">
+            <div class="h-72 w-full">
+              <canvas baseChart
+                [data]="purchaseStatusData"
+                [options]="doughnutChartOptions"
+                [type]="'doughnut'">
+              </canvas>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Shipping Analytics -->
+    <div class="mt-8">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Shipping Analytics</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <mat-card class="!shadow-sm border border-gray-100 !rounded-xl" *ngFor="let kpi of shippingKpis">
+          <mat-card-content class="p-6">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-sm font-medium text-gray-500 mb-1">{{kpi.title}}</p>
+                <h3 class="text-3xl font-bold text-gray-900">{{kpi.value}}</h3>
+              </div>
+              <div class="p-2 bg-blue-50 rounded-lg text-blue-600">
+                <mat-icon>{{kpi.icon}}</mat-icon>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
+        <mat-card class="!shadow-sm border border-gray-100 !rounded-xl">
+          <mat-card-header>
+            <mat-card-title class="text-lg font-semibold text-gray-800">Shipping Performance</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="p-4">
+            <div class="h-72 w-full">
+              <canvas baseChart
+                [data]="shippingPerformanceData"
+                [options]="barChartOptions"
+                [type]="'bar'">
+              </canvas>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        <mat-card class="!shadow-sm border border-gray-100 !rounded-xl">
+          <mat-card-content class="p-4 flex flex-col items-center justify-center">
+              <mat-chip-listbox>
+                <mat-chip-option selected color="primary">Low Risk</mat-chip-option>
+                <mat-chip-option selected color="warn">High Risk</mat-chip-option>
+              </mat-chip-listbox>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <mat-card class="!shadow-sm border border-gray-100 !rounded-xl mt-4 overflow-hidden">
+        <mat-card-header>
+          <mat-card-title class="text-lg font-semibold text-gray-800">Shipping Performance Table</mat-card-title>
+        </mat-card-header>
+        <div class="overflow-x-auto w-full">
+          <table mat-table [dataSource]="shippingPerformanceTable || []" class="w-full min-w-[800px]">
+            <ng-container matColumnDef="mode">
+              <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-600">Shipping Mode</th>
+              <td mat-cell *matCellDef="let s" class="text-sm font-medium text-gray-900">{{s.mode}}</td>
+            </ng-container>
+            <ng-container matColumnDef="shipments">
+              <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-600">Shipments</th>
+              <td mat-cell *matCellDef="let s" class="text-gray-800">{{s.shipments}}</td>
+            </ng-container>
+            <ng-container matColumnDef="ontime">
+              <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-600">On Time %</th>
+              <td mat-cell *matCellDef="let s" class="text-gray-800">{{s.ontime}}</td>
+            </ng-container>
+            <ng-container matColumnDef="avgDays">
+              <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-600">Average Days</th>
+              <td mat-cell *matCellDef="let s" class="text-gray-800">{{s.avgDays}}</td>
+            </ng-container>
+            <ng-container matColumnDef="late">
+              <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-600">Late Shipments</th>
+              <td mat-cell *matCellDef="let s" class="text-gray-800">{{s.late}}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="shippingColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: shippingColumns;" class="hover:bg-gray-50"></tr>
+          </table>
+        </div>
+      </mat-card>
+    </div>
+  </div>

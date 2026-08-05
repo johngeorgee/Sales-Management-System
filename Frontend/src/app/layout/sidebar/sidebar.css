@@ -1,4 +1,17 @@
-      /* Ensure styles are contained, Tailwind handles most. */
-      ::ng-deep .mdc-list-item__start {
-        margin-right: 12px !important;
-      }
+/* sidebar.component.css or styles.css */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
+  border-radius: 9999px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #9CA3AF;
+}

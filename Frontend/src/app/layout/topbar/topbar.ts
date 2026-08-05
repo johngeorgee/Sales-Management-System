@@ -1,18 +1,30 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
+import { Component, EventEmitter, HostListener, Output } from '@angular/core';
+
 import { RouterModule } from '@angular/router';
-import { MatToolbarModule } from '@angular/material/toolbar';
+
 
 @Component({
   selector: 'app-topbar',
-  imports: [CommonModule, RouterModule, MatToolbarModule, MatButtonModule, MatIconModule, MatMenuModule, MatDividerModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './topbar.html',
   styleUrl: './topbar.css',
 })
 export class Topbar {
   @Output() toggleSidebar = new EventEmitter<void>();
+    // Close dropdown when clicking outside
+    @HostListener('document:click', ['$event'])
+  isUserMenuOpen = false;
+
+  toggleUserMenu() {
+    this.isUserMenuOpen = !this.isUserMenuOpen;
+  }
+
+
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.relative')) {
+      this.isUserMenuOpen = false;
+    }
+  }
 }

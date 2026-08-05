@@ -1,0 +1,2 @@
+      /* Tailwind utilities handle most styling */
+      ::ng-deep .mat-mdc-card-header-text { margin: 0 !important; }

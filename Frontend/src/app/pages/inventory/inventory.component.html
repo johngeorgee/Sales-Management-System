@@ -1,0 +1,146 @@
+<div class="p-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800">Inventory</h1>
+      <p class="text-sm text-gray-500">Manage product stock levels and adjust inventory.</p>
+    </div>
+    <button mat-flat-button color="primary" class="bg-blue-600 text-white">
+      <mat-icon>add</mat-icon>
+      Stock Adjustment
+    </button>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <mat-card class="p-4 bg-gradient-to-r from-green-100 to-green-200 rounded-lg shadow">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs font-medium text-gray-600">Total Products</p>
+          <p class="text-xl font-semibold text-gray-800">{{ totalProducts }}</p>
+        </div>
+        <mat-icon class="text-green-600">inventory_2</mat-icon>
+      </div>
+    </mat-card>
+    <mat-card class="p-4 bg-gradient-to-r from-blue-100 to-blue-200 rounded-lg shadow">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs font-medium text-gray-600">In Stock</p>
+          <p class="text-xl font-semibold text-gray-800">{{ inStock }}</p>
+        </div>
+        <mat-icon class="text-blue-600">check_circle</mat-icon>
+      </div>
+    </mat-card>
+    <mat-card class="p-4 bg-gradient-to-r from-yellow-100 to-yellow-200 rounded-lg shadow">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs font-medium text-gray-600">Low Stock</p>
+          <p class="text-xl font-semibold text-gray-800">{{ lowStock }}</p>
+        </div>
+        <mat-icon class="text-yellow-600">warning</mat-icon>
+      </div>
+    </mat-card>
+    <mat-card class="p-4 bg-gradient-to-r from-red-100 to-red-200 rounded-lg shadow">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs font-medium text-gray-600">Out of Stock</p>
+          <p class="text-xl font-semibold text-gray-800">{{ outOfStock }}</p>
+        </div>
+        <mat-icon class="text-red-600">remove_shopping_cart</mat-icon>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Toolbar Filters -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-4 mb-4">
+    <mat-form-field appearance="outline" class="flex-1">
+      <mat-label>Search</mat-label>
+      <input matInput placeholder="Product name or ID" [(ngModel)]="searchTerm" />
+      <button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="searchTerm=''">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Category</mat-label>
+      <mat-select [(ngModel)]="selectedCategory">
+        <mat-option value="">All</mat-option>
+        <mat-option *ngFor="let cat of ['Widgets','Gadgets','Doohickeys']" [value]="cat">{{ cat }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Status</mat-label>
+      <mat-select [(ngModel)]="selectedStatus">
+        <mat-option value="">All</mat-option>
+        <mat-option value="In Stock">In Stock</mat-option>
+        <mat-option value="Low Stock">Low Stock</mat-option>
+        <mat-option value="Out of Stock">Out of Stock</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button mat-stroked-button (click)="clearFilters()">Clear</button>
+  </div>
+
+  <!-- Inventory Table -->
+  <div class="overflow-x-auto">
+    <table mat-table [dataSource]="filteredProducts" class="min-w-full border-collapse">
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef class="px-4 py-2 text-left">Product</th>
+        <td mat-cell *matCellDef="let p" class="px-4 py-2">{{ p.name }}</td>
+      </ng-container>
+      <!-- ID Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef class="px-4 py-2 text-left">ID</th>
+        <td mat-cell *matCellDef="let p" class="px-4 py-2">{{ p.id }}</td>
+      </ng-container>
+      <!-- Category Column -->
+      <ng-container matColumnDef="category">
+        <th mat-header-cell *matHeaderCellDef class="px-4 py-2 text-left">Category</th>
+        <td mat-cell *matCellDef="let p" class="px-4 py-2">{{ p.category }}</td>
+      </ng-container>
+      <!-- Stock Column -->
+      <ng-container matColumnDef="stock">
+        <th mat-header-cell *matHeaderCellDef class="px-4 py-2 text-right">Stock</th>
+        <td mat-cell *matCellDef="let p" class="px-4 py-2 text-right">{{ p.stock }}</td>
+      </ng-container>
+      <!-- Reorder Level Column -->
+      <ng-container matColumnDef="reorderLevel">
+        <th mat-header-cell *matHeaderCellDef class="px-4 py-2 text-right">Reorder</th>
+        <td mat-cell *matCellDef="let p" class="px-4 py-2 text-right">{{ p.reorderLevel }}</td>
+      </ng-container>
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef class="px-4 py-2 text-center">Status</th>
+        <td mat-cell *matCellDef="let p" class="px-4 py-2 text-center">
+          <mat-chip [color]="p.status === 'In Stock' ? 'primary' : (p.status === 'Low Stock' ? 'warn' : 'accent')" selected>{{ p.status }}</mat-chip>
+        </td>
+      </ng-container>
+      <!-- Last Updated Column -->
+      <ng-container matColumnDef="lastUpdated">
+        <th mat-header-cell *matHeaderCellDef class="px-4 py-2 text-left">Updated</th>
+        <td mat-cell *matCellDef="let p" class="px-4 py-2">{{ p.lastUpdated }}</td>
+      </ng-container>
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="px-4 py-2 text-center">Actions</th>
+        <td mat-cell *matCellDef="let p" class="px-4 py-2 text-center">
+          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Actions">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item>
+              <mat-icon>visibility</mat-icon>
+              <span>View</span>
+            </button>
+            <button mat-menu-item>
+              <mat-icon>edit</mat-icon>
+              <span>Adjust Stock</span>
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+</div>

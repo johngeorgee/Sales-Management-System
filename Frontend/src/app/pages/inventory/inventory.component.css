@@ -1,0 +1,14 @@
+/* Inventory component custom styles */
+/* Ensure table headers have a subtle background */
+.mat-header-cell {
+  background-color: #f5f5f5;
+  font-weight: 600;
+}
+/* Hover effect on rows */
+.mat-row:hover {
+  background-color: #e8f0fe;
+}
+/* Align chip text */
+mat-chip {
+  font-weight: 500;
+}

@@ -1,0 +1,32 @@
+<h2 mat-dialog-title>{{data.mode === 'add' ? 'Add' : (data.mode === 'edit' ? 'Edit' : 'View')}} Customer</h2>
+<mat-dialog-content>
+  <form #form="ngForm">
+    <mat-form-field appearance="outline" class="w-full mb-2" *ngIf="data.mode !== 'view'">
+      <mat-label>Full Name</mat-label>
+      <input matInput [(ngModel)]="data.customer.name" name="name" required />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-full mb-2" *ngIf="data.mode !== 'view'">
+      <mat-label>Segment</mat-label>
+      <mat-select [(ngModel)]="data.customer.segment" name="segment" required>
+        <mat-option value="Consumer">Consumer</mat-option>
+        <mat-option value="Corporate">Corporate</mat-option>
+        <mat-option value="Home Office">Home Office</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-full mb-2" *ngIf="data.mode !== 'view'">
+      <mat-label>Location</mat-label>
+      <input matInput [(ngModel)]="data.customer.location" name="location" required />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-full mb-2" *ngIf="data.mode !== 'view'">
+      <mat-label>Status</mat-label>
+      <mat-select [(ngModel)]="data.customer.status" name="status" required>
+        <mat-option value="Active">Active</mat-option>
+        <mat-option value="Inactive">Inactive</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="dialogRef.close(data)">Save</button>
+</mat-dialog-actions>

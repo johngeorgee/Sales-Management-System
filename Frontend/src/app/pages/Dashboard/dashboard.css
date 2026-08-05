@@ -1,0 +1,5 @@
+
+    /* Optional material overrides if needed */
+    ::ng-deep .mat-mdc-card-header-text {
+      margin: 0 !important;
+    }

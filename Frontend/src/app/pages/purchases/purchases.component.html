@@ -1,0 +1,89 @@
+<div class="p-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800">Purchases</h1>
+      <p class="text-sm text-gray-500">Manage purchase orders and their statuses.</p>
+    </div>
+    <button mat-flat-button color="primary" class="bg-blue-600 text-white">
+      <mat-icon>add</mat-icon>
+      Create Purchase Order
+    </button>
+  </div>
+
+  <!-- Toolbar Filters -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-4 mb-4">
+    <mat-form-field appearance="outline" class="flex-1">
+      <mat-label>Search</mat-label>
+      <input matInput placeholder="PO number or supplier" [(ngModel)]="searchTerm" />
+      <button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="searchTerm=''">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Status</mat-label>
+      <mat-select [(ngModel)]="selectedStatus">
+        <mat-option value="">All</mat-option>
+        <mat-option *ngFor="let s of ['Draft','Pending','Approved','Received','Cancelled']" [value]="s">{{ s }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button mat-stroked-button (click)="clearFilters()">Clear</button>
+  </div>
+
+  <!-- Purchases Table -->
+  <div class="overflow-x-auto">
+    <table mat-table [dataSource]="filteredOrders" class="min-w-full border-collapse">
+      <ng-container matColumnDef="poNumber">
+        <th mat-header-cell *matHeaderCellDef class="px-4 py-2 text-left">PO #</th>
+        <td mat-cell *matCellDef="let p" class="px-4 py-2">{{ p.poNumber }}</td>
+      </ng-container>
+      <ng-container matColumnDef="supplier">
+        <th mat-header-cell *matHeaderCellDef class="px-4 py-2 text-left">Supplier</th>
+        <td mat-cell *matCellDef="let p" class="px-4 py-2">{{ p.supplier }}</td>
+      </ng-container>
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef class="px-4 py-2 text-left">Date</th>
+        <td mat-cell *matCellDef="let p" class="px-4 py-2">{{ p.date }}</td>
+      </ng-container>
+      <ng-container matColumnDef="items">
+        <th mat-header-cell *matHeaderCellDef class="px-4 py-2 text-right">Items</th>
+        <td mat-cell *matCellDef="let p" class="px-4 py-2 text-right">{{ p.items }}</td>
+      </ng-container>
+      <ng-container matColumnDef="total">
+        <th mat-header-cell *matHeaderCellDef class="px-4 py-2 text-right">Total</th>
+        <td mat-cell *matCellDef="let p" class="px-4 py-2 text-right">{{ p.total }}</td>
+      </ng-container>
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef class="px-4 py-2 text-center">Status</th>
+        <td mat-cell *matCellDef="let p" class="px-4 py-2 text-center">
+          <mat-chip [color]="p.status === 'Draft' ? 'primary' : (p.status === 'Pending' ? 'accent' : (p.status === 'Approved' ? 'warn' : (p.status === 'Received' ? 'primary' : 'default')) )" selected>{{ p.status }}</mat-chip>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="expectedDelivery">
+        <th mat-header-cell *matHeaderCellDef class="px-4 py-2 text-left">Delivery</th>
+        <td mat-cell *matCellDef="let p" class="px-4 py-2">{{ p.expectedDelivery || '-' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="px-4 py-2 text-center">Actions</th>
+        <td mat-cell *matCellDef="let p" class="px-4 py-2 text-center">
+          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Actions">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item>
+              <mat-icon>visibility</mat-icon>
+              <span>View</span>
+            </button>
+            <button mat-menu-item>
+              <mat-icon>edit</mat-icon>
+              <span>Edit</span>
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+</div>

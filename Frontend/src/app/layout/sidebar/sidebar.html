@@ -1,116 +1,272 @@
+<!-- sidebar.html -->
 <div class="h-full flex flex-col bg-white border-r border-gray-200 w-64 shadow-sm">
-    <div class="p-6 flex items-center justify-between h-16 border-b border-gray-100">
+  <!-- Header with Toggle Button -->
+  <div class="p-4 flex items-center justify-between h-16 border-b border-gray-100">
+    <div class="flex items-center gap-2">
+      <!-- Toggle Button (Always Visible) -->
+      <button 
+        (click)="toggleSidebar.emit()" 
+        class="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        title="Toggle Sidebar"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
+        </svg>
+      </button>
+      
       <div>
         <h1 class="text-xl font-bold text-gray-900 leading-tight m-0">SalesHub</h1>
         <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">ERP</p>
       </div>
-      <button mat-icon-button (click)="close.emit()" class="text-gray-500" >
-        @if (isMobile) {
-            
-            <mat-icon>close</mat-icon>
-        }
-        </button>
     </div>
-
-    <div class="flex-1 overflow-y-auto py-4">
-      <div class="px-4 mb-2">
-        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Sales Management</p>
-      </div>
-      <mat-nav-list class="pt-0">
-        <a mat-list-item routerLink="/dashboard" routerLinkActive="bg-blue-50 text-blue-700 font-medium" [routerLinkActiveOptions]="{exact: true}" #rlaDashboard="routerLinkActive" class="text-gray-700 hover:bg-gray-50">
-          <mat-icon matListItemIcon class="text-gray-500" [class.text-blue-700]="rlaDashboard.isActive">dashboard</mat-icon>
-          <span matListItemTitle>Dashboard</span>
-        </a>
-      </mat-nav-list>
-
-      <div class="px-4 mt-6 mb-2">
-        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Catalog</p>
-      </div>
-      <mat-nav-list class="pt-0">
-        <a mat-list-item routerLink="/products" routerLinkActive="bg-blue-50 text-blue-700 font-medium" [routerLinkActiveOptions]="{ exact : true }" #rlaProducts="routerLinkActive" class="text-gray-700 hover:bg-gray-50 cursor-pointer">
-          <mat-icon matListItemIcon class="text-gray-500" [class.text-blue-700]="rlaProducts.isActive">inventory_2</mat-icon>
-          <span matListItemTitle>Products</span>
-        </a>
-        <a mat-list-item routerLink="/categories" routerLinkActive="bg-blue-50 text-blue-700 font-medium" #rlaCategories="routerLinkActive" class="text-gray-700 hover:bg-gray-50 cursor-pointer">
-          <mat-icon matListItemIcon class="text-gray-500" [class.text-blue-700]="rlaCategories.isActive">category</mat-icon>
-          <span matListItemTitle>Categories</span>
-        </a>
-      </mat-nav-list>
-
-      <div class="px-4 mt-6 mb-2">
-        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Business</p>
-      </div>
-      <mat-nav-list class="pt-0">
-        <a mat-list-item routerLink="/customers" routerLinkActive="bg-blue-50 text-blue-700 font-medium" #rlaCustomers="routerLinkActive" class="text-gray-700 hover:bg-gray-50 cursor-pointer">
-          <mat-icon matListItemIcon class="text-gray-500" [class.text-blue-700]="rlaCustomers.isActive">people</mat-icon>
-          <span matListItemTitle>Customers</span>
-        </a>
-        <a mat-list-item routerLink="/suppliers" routerLinkActive="bg-blue-50 text-blue-700 font-medium" #rlaSuppliers="routerLinkActive" class="text-gray-700 hover:bg-gray-50 cursor-pointer">
-          <mat-icon matListItemIcon class="text-gray-500" [class.text-blue-700]="rlaSuppliers.isActive">local_shipping</mat-icon>
-          <span matListItemTitle>Suppliers</span>
-        </a>
-      </mat-nav-list>
-
-      <div class="px-4 mt-6 mb-2">
-        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Operations</p>
-      </div>
-      <mat-nav-list class="pt-0">
-          <a mat-list-item routerLink="/inventory" routerLinkActive="bg-blue-50 text-blue-700 font-medium" #rlaInventory="routerLinkActive" class="text-gray-700 hover:bg-gray-50 cursor-pointer" [routerLinkActiveOptions]="{exact:true}">
-            <mat-icon matListItemIcon class="text-gray-500" [class.text-blue-700]="rlaInventory.isActive">store</mat-icon>
-            <span matListItemTitle>Inventory</span>
-          </a>
-          <a mat-list-item routerLink="/purchases" routerLinkActive="bg-blue-50 text-blue-700 font-medium" #rlaPurchases="routerLinkActive" class="text-gray-700 hover:bg-gray-50 cursor-pointer" [routerLinkActiveOptions]="{exact:true}">
-            <mat-icon matListItemIcon class="text-gray-500" [class.text-blue-700]="rlaPurchases.isActive">shopping_cart</mat-icon>
-            <span matListItemTitle>Purchases</span>
-          </a>
-          <a mat-list-item routerLink="/orders" routerLinkActive="bg-blue-50 text-blue-700 font-medium" class="text-gray-700 hover:bg-gray-50 cursor-pointer" #rlaOrders="routerLinkActive">
-            <mat-icon matListItemIcon class="text-gray-500" [class.text-blue-700]="rlaOrders.isActive">receipt_long</mat-icon>
-            <span matListItemTitle>Orders</span>
-          </a>
-          <a mat-list-item routerLink="/shipping" routerLinkActive="bg-blue-50 text-blue-700 font-medium" class="text-gray-700 hover:bg-gray-50 cursor-pointer" #rlaShipping="routerLinkActive">
-            <mat-icon matListItemIcon class="text-gray-500" [class.text-blue-700]="rlaShipping.isActive">flight_takeoff</mat-icon>
-            <span matListItemTitle>Shipping</span>
-          </a>
-      </mat-nav-list>
-
-      <div class="px-4 mt-6 mb-2">
-        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Analytics</p>
-      </div>
-      <mat-nav-list class="pt-0">
-        <a mat-list-item routerLink="/reports" routerLinkActive="bg-blue-50 text-blue-700 font-medium" #rlaReports="routerLinkActive" class="text-gray-700 hover:bg-gray-50 cursor-pointer">
-          <mat-icon matListItemIcon class="text-gray-500" [class.text-blue-700]="rlaReports.isActive">bar_chart</mat-icon>
-          <span matListItemTitle>Reports</span>
-        </a>
-      </mat-nav-list>
-
-      <div class="px-4 mt-6 mb-2">
-        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Administration</p>
-      </div>
-      <mat-nav-list class="pt-0">
-         <a mat-list-item routerLink="/users" routerLinkActive="bg-blue-50 text-blue-700 font-medium" #rlaUsers="routerLinkActive" class="text-gray-700 hover:bg-gray-50 cursor-pointer">
-           <mat-icon matListItemIcon class="text-gray-500" [class.text-blue-700]="rlaUsers.isActive">manage_accounts</mat-icon>
-           <span matListItemTitle>Users</span>
-         </a>
-         <a mat-list-item routerLink="/roles" routerLinkActive="bg-blue-50 text-blue-700 font-medium" #rlaRoles="routerLinkActive" class="text-gray-700 hover:bg-gray-50 cursor-pointer">
-           <mat-icon matListItemIcon class="text-gray-500" [class.text-blue-700]="rlaRoles.isActive">admin_panel_settings</mat-icon>
-           <span matListItemTitle>Roles</span>
-         </a>
-      </mat-nav-list>
-    </div>
-
-    <mat-divider></mat-divider>
     
-    <div class="p-2">
-      <mat-nav-list class="pt-0">
-        <a mat-list-item class="text-gray-700 hover:bg-gray-50 cursor-pointer">
-          <mat-icon matListItemIcon class="text-gray-500">settings</mat-icon>
-          <span matListItemTitle>Settings</span>
-        </a>
-        <a mat-list-item routerLink="/login" class="text-red-600 hover:bg-red-50 cursor-pointer">
-          <mat-icon matListItemIcon class="text-red-500">logout</mat-icon>
-          <span matListItemTitle>Logout</span>
-        </a>
-      </mat-nav-list>
-    </div>
-
+    <!-- Close Button (Mobile Only) -->
+    <button 
+      *ngIf="isMobile"
+      (click)="close.emit()" 
+      class="p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </button>
   </div>
+
+  <!-- Navigation -->
+  <div class="flex-1 overflow-y-auto py-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+    
+    <!-- Sales Management -->
+    <div class="px-4 mb-2">
+      <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Sales Management</p>
+    </div>
+    <nav class="px-2 space-y-1">
+      <a 
+        routerLink="/dashboard" 
+        routerLinkActive="bg-blue-50 text-blue-700 font-medium" 
+        [routerLinkActiveOptions]="{exact: true}" 
+        #rlaDashboard="routerLinkActive" 
+        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+        [class.bg-blue-50]="rlaDashboard.isActive"
+        [class.text-blue-700]="rlaDashboard.isActive"
+      >
+        <svg class="w-5 h-5 flex-shrink-0" [class.text-blue-700]="rlaDashboard.isActive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+        </svg>
+        <span>Dashboard</span>
+      </a>
+    </nav>
+
+    <!-- Catalog -->
+    <div class="px-4 mt-6 mb-2">
+      <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Catalog</p>
+    </div>
+    <nav class="px-2 space-y-1">
+      <a 
+        routerLink="/products" 
+        routerLinkActive="bg-blue-50 text-blue-700 font-medium" 
+        [routerLinkActiveOptions]="{exact: true}" 
+        #rlaProducts="routerLinkActive" 
+        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+        [class.bg-blue-50]="rlaProducts.isActive"
+        [class.text-blue-700]="rlaProducts.isActive"
+      >
+        <svg class="w-5 h-5 flex-shrink-0" [class.text-blue-700]="rlaProducts.isActive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+        </svg>
+        <span>Products</span>
+      </a>
+      
+      <a 
+        routerLink="/categories" 
+        routerLinkActive="bg-blue-50 text-blue-700 font-medium" 
+        #rlaCategories="routerLinkActive" 
+        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+        [class.bg-blue-50]="rlaCategories.isActive"
+        [class.text-blue-700]="rlaCategories.isActive"
+      >
+        <svg class="w-5 h-5 flex-shrink-0" [class.text-blue-700]="rlaCategories.isActive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+        </svg>
+        <span>Categories</span>
+      </a>
+    </nav>
+
+    <!-- Business -->
+    <div class="px-4 mt-6 mb-2">
+      <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Business</p>
+    </div>
+    <nav class="px-2 space-y-1">
+      <a 
+        routerLink="/customers" 
+        routerLinkActive="bg-blue-50 text-blue-700 font-medium" 
+        #rlaCustomers="routerLinkActive" 
+        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+        [class.bg-blue-50]="rlaCustomers.isActive"
+        [class.text-blue-700]="rlaCustomers.isActive"
+      >
+        <svg class="w-5 h-5 flex-shrink-0" [class.text-blue-700]="rlaCustomers.isActive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+        </svg>
+        <span>Customers</span>
+      </a>
+      
+      <a 
+        routerLink="/suppliers" 
+        routerLinkActive="bg-blue-50 text-blue-700 font-medium" 
+        #rlaSuppliers="routerLinkActive" 
+        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+        [class.bg-blue-50]="rlaSuppliers.isActive"
+        [class.text-blue-700]="rlaSuppliers.isActive"
+      >
+        <svg class="w-5 h-5 flex-shrink-0" [class.text-blue-700]="rlaSuppliers.isActive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+        </svg>
+        <span>Suppliers</span>
+      </a>
+    </nav>
+
+    <!-- Operations -->
+    <div class="px-4 mt-6 mb-2">
+      <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Operations</p>
+    </div>
+    <nav class="px-2 space-y-1">
+      <a 
+        routerLink="/inventory" 
+        routerLinkActive="bg-blue-50 text-blue-700 font-medium" 
+        [routerLinkActiveOptions]="{exact: true}" 
+        #rlaInventory="routerLinkActive" 
+        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+        [class.bg-blue-50]="rlaInventory.isActive"
+        [class.text-blue-700]="rlaInventory.isActive"
+      >
+        <svg class="w-5 h-5 flex-shrink-0" [class.text-blue-700]="rlaInventory.isActive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+        </svg>
+        <span>Inventory</span>
+      </a>
+      
+      <a 
+        routerLink="/purchases" 
+        routerLinkActive="bg-blue-50 text-blue-700 font-medium" 
+        [routerLinkActiveOptions]="{exact: true}" 
+        #rlaPurchases="routerLinkActive" 
+        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+        [class.bg-blue-50]="rlaPurchases.isActive"
+        [class.text-blue-700]="rlaPurchases.isActive"
+      >
+        <svg class="w-5 h-5 flex-shrink-0" [class.text-blue-700]="rlaPurchases.isActive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+        </svg>
+        <span>Purchases</span>
+      </a>
+      
+      <a 
+        routerLink="/orders" 
+        routerLinkActive="bg-blue-50 text-blue-700 font-medium" 
+        #rlaOrders="routerLinkActive" 
+        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+        [class.bg-blue-50]="rlaOrders.isActive"
+        [class.text-blue-700]="rlaOrders.isActive"
+      >
+        <svg class="w-5 h-5 flex-shrink-0" [class.text-blue-700]="rlaOrders.isActive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+        </svg>
+        <span>Orders</span>
+      </a>
+      
+      <a 
+        routerLink="/shipping" 
+        routerLinkActive="bg-blue-50 text-blue-700 font-medium" 
+        #rlaShipping="routerLinkActive" 
+        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+        [class.bg-blue-50]="rlaShipping.isActive"
+        [class.text-blue-700]="rlaShipping.isActive"
+      >
+        <svg class="w-5 h-5 flex-shrink-0" [class.text-blue-700]="rlaShipping.isActive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+        </svg>
+        <span>Shipping</span>
+      </a>
+    </nav>
+
+    <!-- Analytics -->
+    <div class="px-4 mt-6 mb-2">
+      <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Analytics</p>
+    </div>
+    <nav class="px-2 space-y-1">
+      <a 
+        routerLink="/reports" 
+        routerLinkActive="bg-blue-50 text-blue-700 font-medium" 
+        #rlaReports="routerLinkActive" 
+        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+        [class.bg-blue-50]="rlaReports.isActive"
+        [class.text-blue-700]="rlaReports.isActive"
+      >
+        <svg class="w-5 h-5 flex-shrink-0" [class.text-blue-700]="rlaReports.isActive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+        </svg>
+        <span>Reports</span>
+      </a>
+    </nav>
+
+    <!-- Administration -->
+    <div class="px-4 mt-6 mb-2">
+      <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Administration</p>
+    </div>
+    <nav class="px-2 space-y-1">
+      <a 
+        routerLink="/users" 
+        routerLinkActive="bg-blue-50 text-blue-700 font-medium" 
+        #rlaUsers="routerLinkActive" 
+        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+        [class.bg-blue-50]="rlaUsers.isActive"
+        [class.text-blue-700]="rlaUsers.isActive"
+      >
+        <svg class="w-5 h-5 flex-shrink-0" [class.text-blue-700]="rlaUsers.isActive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+        </svg>
+        <span>Users</span>
+      </a>
+      
+      <a 
+        routerLink="/roles" 
+        routerLinkActive="bg-blue-50 text-blue-700 font-medium" 
+        #rlaRoles="routerLinkActive" 
+        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+        [class.bg-blue-50]="rlaRoles.isActive"
+        [class.text-blue-700]="rlaRoles.isActive"
+      >
+        <svg class="w-5 h-5 flex-shrink-0" [class.text-blue-700]="rlaRoles.isActive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+        </svg>
+        <span>Roles</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- Divider -->
+  <div class="border-t border-gray-200"></div>
+  
+  <!-- Footer Actions -->
+  <div class="p-2">
+    <nav class="px-2 space-y-1">
+      <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer">
+        <svg class="w-5 h-5 flex-shrink-0 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+        <span>Settings</span>
+      </a>
+      
+      <a 
+        routerLink="/login" 
+        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+      >
+        <svg class="w-5 h-5 flex-shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+        </svg>
+        <span>Logout</span>
+      </a>
+    </nav>
+  </div>
+</div>

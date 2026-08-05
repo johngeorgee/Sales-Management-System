@@ -1,16 +1,27 @@
-<mat-sidenav-container class="h-screen bg-gray-50 bg-opacity-50">
-      
-    <!-- Mobile Sidebar (Drawer) -->
-    <mat-sidenav #sidenav [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile && sidebarOpen" class="border-none shadow-xl">
-      <app-sidebar [isMobile]="isMobile" (close)="sidenav.close()"></app-sidebar>
-    </mat-sidenav>
+<!-- layout.html -->
+<!-- In your parent layout component -->
+<app-topbar (toggleSidebar)="toggleSidebar()"></app-topbar>
 
-    <mat-sidenav-content class="flex flex-col h-full overflow-hidden relative">
-      <app-topbar (toggleSidebar)="toggleSidebar(sidenav)"></app-topbar>
-      
-      <main class="flex-1 overflow-auto bg-gray-50/50 p-2 sm:p-4 lg:p-6">
-        <router-outlet></router-outlet>
-      </main>
-    </mat-sidenav-content>
-
-  </mat-sidenav-container>
+<div class="flex h-screen">
+  <!-- Mobile Overlay -->
+  <div 
+    *ngIf="isMobile && isSidebarOpen"
+    (click)="closeSidebar()"
+    class="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300"
+  ></div>
+  
+  <!-- Sidebar -->
+  <app-sidebar 
+    [isMobile]="isMobile"
+    (close)="closeSidebar()"
+    (toggleSidebar)="toggleSidebar()"
+    class="fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out"
+    [class.-translate-x-full]="!isSidebarOpen"
+    [class.translate-x-0]="isSidebarOpen"
+  ></app-sidebar>
+  
+  <!-- Main Content -->
+  <main class="flex-1 overflow-y-auto" [class.ml-64]="!isMobile && isSidebarOpen">
+    <router-outlet></router-outlet>
+  </main>
+</div>

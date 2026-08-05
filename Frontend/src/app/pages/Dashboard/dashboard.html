@@ -1,0 +1,306 @@
+<!-- dashboard.component.html -->
+<div class="max-w-7xl mx-auto space-y-6 p-4">
+  
+    <!-- 1. Page Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 m-0 leading-tight">Dashboard</h1>
+        <p class="text-sm text-gray-500 mt-1">Overview of your sales, orders, inventory and business performance.</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          Last 30 Days
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        <button class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-medium">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+          </svg>
+          Export
+        </button>
+      </div>
+    </div>
+  
+    <!-- 2. KPI Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      
+      <!-- Total Sales -->
+      <div class="bg-white shadow-sm border border-gray-100 rounded-xl p-6 hover:shadow-md transition-shadow">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-sm font-medium text-gray-500 mb-1">Total Sales</p>
+            <h3 class="text-3xl font-bold text-gray-900">$124,580</h3>
+          </div>
+          <div class="p-2 bg-blue-50 rounded-lg text-blue-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="mt-4 flex items-center text-sm">
+          <svg class="w-4 h-4 text-green-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+          </svg>
+          <span class="text-green-600 font-medium">+12.5%</span>
+          <span class="text-gray-400 ml-2">from last month</span>
+        </div>
+      </div>
+  
+      <!-- Total Orders -->
+      <div class="bg-white shadow-sm border border-gray-100 rounded-xl p-6 hover:shadow-md transition-shadow">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-sm font-medium text-gray-500 mb-1">Total Orders</p>
+            <h3 class="text-3xl font-bold text-gray-900">1,248</h3>
+          </div>
+          <div class="p-2 bg-purple-50 rounded-lg text-purple-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="mt-4 flex items-center text-sm">
+          <svg class="w-4 h-4 text-green-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+          </svg>
+          <span class="text-green-600 font-medium">+8.2%</span>
+          <span class="text-gray-400 ml-2">from last month</span>
+        </div>
+      </div>
+  
+      <!-- Customers -->
+      <div class="bg-white shadow-sm border border-gray-100 rounded-xl p-6 hover:shadow-md transition-shadow">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-sm font-medium text-gray-500 mb-1">Customers</p>
+            <h3 class="text-3xl font-bold text-gray-900">2,845</h3>
+          </div>
+          <div class="p-2 bg-indigo-50 rounded-lg text-indigo-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="mt-4 flex items-center text-sm">
+          <svg class="w-4 h-4 text-green-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+          </svg>
+          <span class="text-green-600 font-medium">+5.4%</span>
+          <span class="text-gray-400 ml-2">from last month</span>
+        </div>
+      </div>
+  
+      <!-- Low Stock -->
+      <div class="bg-red-50/30 shadow-sm border border-red-100 rounded-xl p-6 hover:shadow-md transition-shadow">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-sm font-medium text-red-600 mb-1">Low Stock</p>
+            <h3 class="text-3xl font-bold text-red-700">24</h3>
+          </div>
+          <div class="p-2 bg-red-100 rounded-lg text-red-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="mt-4 flex items-center text-sm">
+          <span class="text-red-600 font-medium">Products requiring attention</span>
+        </div>
+      </div>
+  
+    </div>
+  
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Sales Overview -->
+      <div class="bg-white shadow-sm border border-gray-100 rounded-xl lg:col-span-2">
+        <div class="p-6 pb-2">
+          <h3 class="text-lg font-semibold text-gray-800">Sales Overview</h3>
+          <p class="text-sm text-gray-500">Monthly sales performance</p>
+        </div>
+        <div class="p-4 pt-0">
+          <div class="h-72 w-full">
+            <canvas #salesChart></canvas>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Orders Overview -->
+      <div class="bg-white shadow-sm border border-gray-100 rounded-xl">
+        <div class="p-6 pb-2">
+          <h3 class="text-lg font-semibold text-gray-800">Orders Overview</h3>
+        </div>
+        <div class="p-4 pt-0 flex flex-col items-center justify-center">
+          <div class="h-56 w-full max-w-[250px] relative">
+            <canvas #ordersChart></canvas>
+            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+              <span class="text-2xl font-bold text-gray-800">1,148</span>
+              <span class="text-xs text-gray-500">Total Orders</span>
+            </div>
+          </div>
+          
+          <div class="w-full mt-6 space-y-2">
+            <div class="flex justify-between items-center text-sm">
+              <div class="flex items-center">
+                <div class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+                <span class="text-gray-600">Completed</span>
+              </div>
+              <span class="font-medium">680</span>
+            </div>
+            <div class="flex justify-between items-center text-sm">
+              <div class="flex items-center">
+                <div class="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
+                <span class="text-gray-600">Processing</span>
+              </div>
+              <span class="font-medium">240</span>
+            </div>
+            <div class="flex justify-between items-center text-sm">
+              <div class="flex items-center">
+                <div class="w-3 h-3 rounded-full bg-amber-500 mr-2"></div>
+                <span class="text-gray-600">Pending</span>
+              </div>
+              <span class="font-medium">180</span>
+            </div>
+            <div class="flex justify-between items-center text-sm">
+              <div class="flex items-center">
+                <div class="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+                <span class="text-gray-600">Cancelled</span>
+              </div>
+              <span class="font-medium">48</span>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  
+    <!-- Inventory Status -->
+    <div class="bg-white shadow-sm border border-gray-100 rounded-xl">
+      <div class="p-6 pb-4">
+        <h3 class="text-lg font-semibold text-gray-800">Inventory Status</h3>
+      </div>
+      <div class="p-6 pt-0">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          <div class="space-y-2">
+            <div class="flex justify-between items-end">
+              <span class="text-sm font-medium text-gray-600">In Stock</span>
+              <span class="text-lg font-semibold text-gray-900">720</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div class="bg-blue-600 h-2 rounded-full" style="width: 85%"></div>
+            </div>
+          </div>
+          
+          <div class="space-y-2">
+            <div class="flex justify-between items-end">
+              <span class="text-sm font-medium text-amber-600">Low Stock</span>
+              <span class="text-lg font-semibold text-gray-900">84</span>
+            </div>
+            <div class="w-full bg-amber-100 rounded-full h-2">
+              <div class="bg-amber-500 h-2 rounded-full" style="width: 10%"></div>
+            </div>
+          </div>
+  
+          <div class="space-y-2">
+            <div class="flex justify-between items-end">
+              <span class="text-sm font-medium text-red-600">Out of Stock</span>
+              <span class="text-lg font-semibold text-gray-900">24</span>
+            </div>
+            <div class="w-full bg-red-100 rounded-full h-2">
+              <div class="bg-red-500 h-2 rounded-full" style="width: 5%"></div>
+            </div>
+          </div>
+  
+        </div>
+      </div>
+    </div>
+  
+    <!-- Tables Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Recent Orders -->
+      <div class="bg-white shadow-sm border border-gray-100 rounded-xl lg:col-span-2 overflow-hidden">
+        <div class="p-4 border-b border-gray-100">
+          <h3 class="text-lg font-semibold text-gray-800">Recent Orders</h3>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Order ID</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Customer</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Amount</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr *ngFor="let order of recentOrders" class="hover:bg-gray-50 transition-colors">
+                <td class="px-4 py-3 text-sm font-medium text-gray-900">{{order.id}}</td>
+                <td class="px-4 py-3 text-sm text-gray-600">{{order.customer}}</td>
+                <td class="px-4 py-3 text-sm text-gray-500">{{order.date}}</td>
+                <td class="px-4 py-3 text-sm font-medium text-gray-800">{{order.amount}}</td>
+                <td class="px-4 py-3">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                    [ngClass]="{
+                      'bg-green-100 text-green-800': order.status === 'Completed',
+                      'bg-blue-100 text-blue-800': order.status === 'Processing',
+                      'bg-amber-100 text-amber-800': order.status === 'Pending',
+                      'bg-red-100 text-red-800': order.status === 'Cancelled'
+                    }">
+                    {{order.status}}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+  
+      <!-- Low Stock Products -->
+      <div class="bg-white shadow-sm border border-gray-100 rounded-xl overflow-hidden">
+        <div class="p-4 border-b border-gray-100">
+          <h3 class="text-lg font-semibold text-gray-800">Low Stock Products</h3>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Product</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Stock</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr *ngFor="let prod of lowStockProducts" class="hover:bg-gray-50 transition-colors">
+                <td class="px-4 py-3">
+                  <div class="text-sm font-medium text-gray-900">{{prod.name}}</div>
+                  <div class="text-xs text-gray-500">{{prod.category}}</div>
+                </td>
+                <td class="px-4 py-3 text-sm font-semibold" [ngClass]="prod.stock <= 3 ? 'text-red-600' : 'text-amber-600'">
+                  {{prod.stock}}
+                </td>
+                <td class="px-4 py-3">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
+                    [ngClass]="prod.status === 'Critical' ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'">
+                    {{prod.status}}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+  
+    </div>
+    
+    <!-- Bottom padding -->
+    <div class="h-4"></div>
+  </div>
