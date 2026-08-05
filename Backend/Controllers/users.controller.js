@@ -4,10 +4,27 @@ const bcrypt = require("bcrypt")
 
 //Get All Users
 const getUsers = ((req, res)=>{
-    userModel.find().then((users)=>{
-        res.status(201).json({
+    userModel.find().populate("roleId").then((users)=>{
+                    const formattedUsers = users.map(user => ({
+                _id: user._id,
+                username: user.username,
+                email: user.email,
+                phoneNumber: user.phoneNumber,
+                gender: user.gender,
+                age: user.age,
+                isActive: user.isActive,
+                role: user.roleId ? {
+                    _id: user.roleId._id,
+                    name: user.roleId.name,
+                    permissions: user.roleId.permissions
+                } : null,  // If no role assigned
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt
+            }));
+        res.status(200).json({
+            
             message : "User Found Successfully",
-            data  : users,
+            data  : formattedUsers,
         })
     }).catch( (error) =>{
         console.log(error);   
@@ -21,14 +38,30 @@ const getUsers = ((req, res)=>{
 //Get User By ID 
 const getUserById = ((req, res)=>{
     const userId = req.params.id;
-    userModel.findById(userId).then((user)=>{
+    userModel.findById(userId).populate("roleId").then((user)=>{
         if(!user){
            return res.status(404).send("User Not Found, Please Try Again")
         }
+                    const formattedUser = {
+                _id: user._id,
+                username: user.username,
+                email: user.email,
+                phoneNumber: user.phoneNumber,
+                gender: user.gender,
+                age: user.age,
+                isActive: user.isActive,
+                role: user.roleId ? {
+                    _id: user.roleId._id,
+                    name: user.roleId.name,
+                    permissions: user.roleId.permissions
+                } : null,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt
+            };
         res.status(200).send(
             {
                 message : "User Fetched Successfully", 
-                userData : user
+                userData : formattedUser
             })
     }).catch((error)=>{
         console.log(error);
@@ -41,7 +74,7 @@ const getUserById = ((req, res)=>{
 const register = ((req, res)=>{
     const data = req.body;
     userModel.create(data).then(() => {
-      res.status(201).json({ msg: "user added successfully", data: data});
+      res.status(201).json({ msg: "user added successfully", data: { _id: data._id, username: data.username, email: data.email, roleId: data.roleId } });
 }).catch((err) => {
       console.log(err);
       res.status(500).send("user not added , try again");
@@ -67,7 +100,7 @@ const login = ((req, res)=>{
         .send({msg: "please enter valid Data .. Email & Password is required"})
         return;
     }
-    userModel.findOne({email : email})
+    userModel.findOne({email : email}).populate("roleId")
     .then((user)=>{
         if(!user){
             res.status(401).send({
@@ -86,23 +119,33 @@ const login = ((req, res)=>{
             }
 
             var token = jwt.sign(
-                {id: user._id, email: user.email },
+                {id: user._id, email: user.email, role: user.roleId?.name || 'user'},
                     process.env.JWT_SECRET,{expiresIn: "1h"},
             );
             res.status(200).send({
                 message : "Login Successfully",
-                token: token
-            })
+                token: token,
+                user: {
+                    id: user._id,
+                    username: user.username,
+                    email: user.email,
+                    role: user.roleId ?  {
+                                _id: user.roleId._id,
+                                name: user.roleId.name,
+                                permissions: user.roleId.permissions
+                            } : null
+                }
+            });
         }).catch((err)=>{
             console.log(err);
-            res.status(401).send({
+            res.status(401).json({
                 message : "Invalid Email or Password.. Register First",
                 err: err,
             })
         })
     }).catch((err)=>{
         console.log(err);
-        res.status(500).send({
+        res.status(500).json({
             message : "Error while login please try again  ",
             err: err
         });
@@ -131,7 +174,18 @@ const updateUser = (req, res) =>{
         if(!updated){
             return res.status(404).json({message : "User Not Found"});
         }
-        res.status(200).send("User Updated Successfully")
+        res.status(200).send({message: "User Updated Successfully", 
+            data: {
+                _id: updated._id,
+                username: updated.username,
+                email: updated.email,
+                role: updated.roleId ? {
+                    _id: updated.roleId._id,
+                    name: updated.roleId.name,
+                } : null
+
+            }
+        })
     }).catch((err)=>{
         console.log(err);
         res.status(500).send({message : "Cannot Update User, Please Try Again "})
@@ -151,7 +205,7 @@ const deleteUser = (req, res) => {
 
       res
         .status(200)
-        .json({ msg: "user deleted successfully", data: deletedUser });
+        .json({ msg: "user deleted successfully", data: { _id: deletedUser._id , username: deletedUser.username, email: deletedUser.email } });
     })
     .catch((err) => {
       console.log(err);

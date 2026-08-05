@@ -30,12 +30,14 @@ const addShipping = async (req, res) => {
 
 const getAllShippings = async (req, res) => {
     try {
-
-        const shippings = await getShippings();
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 20;
+        const result = await getShippings(page, limit);
 
         return res.status(200).json({
             message: "Shippings fetched successfully",
-            data: shippings
+            data: result.shippings,
+            pagination: result.pagination
         });
 
     } catch (error) {
