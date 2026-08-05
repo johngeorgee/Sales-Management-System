@@ -1,0 +1,138 @@
+<!-- register.component.html -->
+<div class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-md p-8 bg-white shadow-lg rounded-xl">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 m-0">Create Account</h1>
+        <p class="text-gray-500 mt-2">Join SalesHub ERP</p>
+      </div>
+  
+      <form (ngSubmit)="onSubmit()" class="space-y-5">
+        <!-- Username -->
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-700 mb-1">
+            Username *
+          </label>
+          <input
+            id="username"
+            type="text"
+            [(ngModel)]="user.username"
+            name="username"
+            placeholder="Enter username"
+            required
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-200"
+          />
+        </div>
+  
+        <!-- Email -->
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
+            Email *
+          </label>
+          <input
+            id="email"
+            type="email"
+            [(ngModel)]="user.email"
+            name="email"
+            placeholder="Enter your email"
+            required
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-200"
+          />
+        </div>
+  
+        <!-- Password -->
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
+            Password *
+          </label>
+          <div class="relative">
+            <input
+              id="password"
+              [type]="hidePassword ? 'password' : 'text'"
+              [(ngModel)]="user.password"
+              name="password"
+              placeholder="Enter password (min 8 characters)"
+              required
+              minlength="8"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-200 pr-12"
+            />
+            <button
+              type="button"
+              (click)="hidePassword = !hidePassword"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+            >
+              <span class="material-icons">
+                {{ hidePassword ? 'visibility_off' : 'visibility' }}
+              </span>
+            </button>
+          </div>
+          <p class="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
+        </div>
+  
+        <!-- Phone Number -->
+        <div>
+          <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">
+            Phone Number
+          </label>
+          <input
+            id="phone"
+            type="tel"
+            [(ngModel)]="user.phoneNumber"
+            name="phoneNumber"
+            placeholder="Enter phone number"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-200"
+          />
+        </div>
+  
+        <!-- Gender -->
+        <div>
+          <label for="gender" class="block text-sm font-medium text-gray-700 mb-1">
+            Gender
+          </label>
+          <select
+            id="gender"
+            [(ngModel)]="user.gender"
+            name="gender"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-200"
+          >
+            <option value="">Select Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+  
+        <!-- Age -->
+        <div>
+          <label for="age" class="block text-sm font-medium text-gray-700 mb-1">
+            Age
+          </label>
+          <input
+            id="age"
+            type="number"
+            [(ngModel)]="user.age"
+            name="age"
+            placeholder="Enter age"
+            min="1"
+            max="120"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-200"
+          />
+        </div>
+  
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          [disabled]="!isFormValid()"
+          class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 focus:ring-4 focus:ring-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Create Account
+        </button>
+  
+        <!-- Login Link -->
+        <div class="text-center text-sm text-gray-600 mt-4">
+          Already have an account?
+          <a routerLink="/login" class="text-blue-600 hover:text-blue-800 font-medium">
+            Sign In
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
