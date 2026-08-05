@@ -1,0 +1,5 @@
+.product-category-panel {
+    max-height: 280px !important;
+    min-width: 220px !important;
+    border-radius: 8px !important;
+  }
