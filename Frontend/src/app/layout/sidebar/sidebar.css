@@ -1,0 +1,4 @@
+      /* Ensure styles are contained, Tailwind handles most. */
+      ::ng-deep .mdc-list-item__start {
+        margin-right: 12px !important;
+      }
