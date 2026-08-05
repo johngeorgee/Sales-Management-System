@@ -1,0 +1,4 @@
+    /* Some material overrides can go here if needed, but Tailwind should suffice for spacing */
+    ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+        display: none;
+      }
