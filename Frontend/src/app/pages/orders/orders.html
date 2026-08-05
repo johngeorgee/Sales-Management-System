@@ -1,0 +1,374 @@
+<div class="mx-auto max-w-7xl space-y-6">
+
+    <!-- Header -->
+  
+    <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+  
+      <div>
+  
+        <h1 class="text-3xl font-bold text-slate-800">
+          Orders
+        </h1>
+  
+        <p class="mt-1 text-sm text-slate-500">
+          Manage customer orders and shipping information.
+        </p>
+  
+      </div>
+  
+      <button
+        (click)="createOrder()"
+        class="rounded-xl bg-blue-600 px-5 py-3 font-medium text-white transition hover:bg-blue-700">
+  
+        + Create Order
+  
+      </button>
+  
+    </div>
+  
+  
+    <!-- Filters -->
+  
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+  
+      <div class="grid grid-cols-1 gap-4 lg:grid-cols-5">
+  
+        <!-- Search -->
+  
+        <input
+          type="text"
+          placeholder="Search Orders..."
+          [(ngModel)]="searchQuery"
+          (input)="applyFilters()"
+          class="rounded-xl border border-slate-300 px-4 py-2 outline-none transition focus:border-blue-500">
+  
+  
+        <!-- Status -->
+  
+        <select
+          [(ngModel)]="selectedStatus"
+          (change)="applyFilters()"
+          class="rounded-xl border border-slate-300 px-4 py-2 outline-none focus:border-blue-500">
+  
+          <option value="All">All Status</option>
+          <option value="Pending Payment">Pending Payment</option>
+          <option value="Processing">Processing</option>
+          <option value="Complete">Complete</option>
+          <option value="Closed">Closed</option>
+  
+        </select>
+  
+  
+        <!-- From -->
+  
+        <input
+          type="date"
+          [(ngModel)]="dateFrom"
+          (change)="applyFilters()"
+          class="rounded-xl border border-slate-300 px-4 py-2">
+  
+  
+        <!-- To -->
+  
+        <input
+          type="date"
+          [(ngModel)]="dateTo"
+          (change)="applyFilters()"
+          class="rounded-xl border border-slate-300 px-4 py-2">
+  
+  
+        <button
+          (click)="clearFilters()"
+          class="rounded-xl border border-slate-300 px-4 py-2 transition hover:bg-slate-100">
+  
+          Clear Filters
+  
+        </button>
+  
+      </div>
+  
+    </div>
+  
+  
+    <!-- Table -->
+  
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+  
+      <div class="overflow-x-auto">
+  
+        <table class="min-w-full">
+  
+          <thead class="bg-slate-50">
+  
+            <tr>
+  
+              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">
+                Order ID
+              </th>
+  
+              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">
+                Customer
+              </th>
+  
+              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">
+                Date
+              </th>
+  
+              <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">
+                Items
+              </th>
+  
+              <th class="px-6 py-4 text-right text-sm font-semibold text-slate-600">
+                Total
+              </th>
+  
+              <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">
+                Payment
+              </th>
+  
+              <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">
+                Status
+              </th>
+  
+              <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">
+                Shipping
+              </th>
+  
+              <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">
+                Actions
+              </th>
+  
+            </tr>
+  
+          </thead>
+  
+  
+          <tbody>
+  
+            @if(loading){
+  
+              <tr>
+  
+                <td colspan="9" class="py-20 text-center text-slate-500">
+  
+                  Loading Orders...
+  
+                </td>
+  
+              </tr>
+  
+            }
+  
+            @else {
+  
+              @if(filteredOrders.length === 0){
+  
+                <tr>
+  
+                  <td colspan="9" class="py-20 text-center text-slate-500">
+  
+                    No Orders Found
+  
+                  </td>
+  
+                </tr>
+  
+              }
+  
+              @else{
+  
+                @for(order of filteredOrders; track order._id){
+  
+                <tr class="border-t transition hover:bg-slate-50">
+  
+                  <td class="px-6 py-4 font-medium">
+  
+                    {{order.Order_Id}}
+  
+                  </td>
+  
+  
+                  <td class="px-6 py-4">
+  
+                    {{order.customerRef.Customer_FullName}}
+  
+                  </td>
+  
+  
+                  <td class="px-6 py-4">
+  
+                    {{formatDate(order.order_date)}}
+  
+                  </td>
+  
+  
+                  <td class="px-6 py-4 text-center">
+  
+                    {{order.itemCount}}
+  
+                  </td>
+  
+  
+                  <td class="px-6 py-4 text-right font-semibold">
+  
+                    ${{order.totalAmout | number:'1.2-2'}}
+  
+                  </td>
+  
+  
+                  <td class="px-6 py-4 text-center">
+  
+                    {{order.Type}}
+  
+                  </td>
+  
+  
+                  <td class="px-6 py-4 text-center">
+  
+                    <span
+                      class="rounded-full px-3 py-1 text-xs font-semibold"
+  
+                      [ngClass]="{
+  
+                      'bg-yellow-100 text-yellow-800':
+                      order.Order_Status==='Pending Payment',
+  
+                      'bg-blue-100 text-blue-800':
+                      order.Order_Status==='Processing',
+  
+                      'bg-green-100 text-green-800':
+                      order.Order_Status==='Complete',
+  
+                      'bg-gray-200 text-gray-700':
+                      order.Order_Status==='Closed'
+  
+                      }">
+  
+                      {{order.Order_Status}}
+  
+                    </span>
+  
+                  </td>
+  
+  
+                  <td class="px-6 py-4 text-center">
+  
+                    {{order.shippingRef.Shipping_Mode}}
+  
+                  </td>
+  
+  
+                  <td class="px-6 py-4">
+  
+                    <div class="flex justify-center gap-2">
+  
+                      <button
+                        (click)="viewOrder(order._id)"
+                        class="rounded-lg bg-slate-100 px-3 py-1 text-sm hover:bg-slate-200">
+  
+                        View
+  
+                      </button>
+  
+                      <button
+                        (click)="editOrder(order)"
+                        class="rounded-lg bg-blue-100 px-3 py-1 text-sm text-blue-700 hover:bg-blue-200">
+  
+                        Edit
+  
+                      </button>
+  
+                      <button
+                        (click)="deleteOrder(order._id)"
+                        class="rounded-lg bg-red-100 px-3 py-1 text-sm text-red-700 hover:bg-red-200">
+  
+                        Delete
+  
+                      </button>
+  
+                    </div>
+  
+                  </td>
+  
+                </tr>
+  
+                }
+  
+              }
+  
+            }
+  
+          </tbody>
+  
+        </table>
+  
+      </div>
+  
+  
+      <!-- Pagination -->
+  
+      <div
+        class="flex items-center justify-between border-t px-6 py-4">
+  
+        <p class="text-sm text-slate-500">
+  
+          Total Orders :
+          <span class="font-semibold">
+            {{totalOrders}}
+          </span>
+  
+        </p>
+  
+  
+        <div class="flex items-center gap-3">
+  
+          <button
+  
+            (click)="previousPage()"
+  
+            [disabled]="currentPage===1"
+  
+            class="rounded-lg border px-4 py-2 disabled:opacity-50">
+  
+            Previous
+  
+          </button>
+  
+  
+          <span class="font-medium">
+  
+            {{currentPage}}
+  
+            /
+  
+            {{totalPages}}
+  
+          </span>
+  
+  
+          <button
+  
+            (click)="nextPage()"
+  
+            [disabled]="currentPage===totalPages"
+  
+            class="rounded-lg border px-4 py-2 disabled:opacity-50">
+  
+            Next
+  
+          </button>
+  
+        </div>
+  
+      </div>
+  
+    </div>
+  
+</div>
+<app-order-dialog
+  [isOpen]="isDialogOpen"
+  [mode]="dialogMode"
+  [order]="selectedOrder"
+  (closed)="closeDialog()"
+  (saved)="saveOrder($event)">
+</app-order-dialog>

@@ -1,0 +1,427 @@
+@if (isOpen) {
+
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+  
+    <div class="w-full max-w-4xl rounded-2xl bg-white shadow-2xl">
+  
+      <!-- ================= Header ================= -->
+  
+      <div class="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+  
+        <h2 class="text-xl font-semibold text-slate-800">
+  
+          @switch (mode) {
+  
+            @case ('add') {
+              Add Order
+            }
+  
+            @case ('edit') {
+              Edit Order
+            }
+  
+            @case ('view') {
+              Order Details
+            }
+  
+          }
+  
+        </h2>
+  
+        <button
+          type="button"
+          (click)="close()"
+          class="rounded-lg p-2 transition hover:bg-slate-100">
+  
+          ✕
+  
+        </button>
+  
+      </div>
+  
+      <!-- ================= Body ================= -->
+  
+      <div class="max-h-[70vh] overflow-y-auto p-6">
+  
+        <!-- ================= View Mode ================= -->
+  
+        @if (mode === 'view') {
+  
+        <div class="space-y-6">
+  
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Order ID
+              </p>
+  
+              <p class="mt-1 text-slate-900">
+                {{ order?.Order_Id }}
+              </p>
+            </div>
+  
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Customer
+              </p>
+  
+              <p class="mt-1 text-slate-900">
+                {{ order?.customerRef?.Customer_FullName }}
+              </p>
+            </div>
+  
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Order Date
+              </p>
+  
+              <p class="mt-1 text-slate-900">
+                {{ formatExcelDate(order?.order_date) }}
+              </p>
+            </div>
+  
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Status
+              </p>
+  
+              <span
+                class="inline-flex rounded-full px-3 py-1 text-xs font-semibold"
+  
+                [ngClass]="
+                  order?.Order_Status === 'Pending Payment'
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : order?.Order_Status === 'Processing'
+                      ? 'bg-blue-100 text-blue-800'
+                      : order?.Order_Status === 'Complete'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-gray-100 text-gray-800'
+                ">
+  
+                {{ order?.Order_Status }}
+  
+              </span>
+  
+            </div>
+  
+          </div>
+  
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  
+            <div>
+  
+              <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Shipping Method
+              </p>
+  
+              <p class="mt-1 text-slate-900">
+                {{ order?.shippingRef?.Shipping_Mode }}
+              </p>
+  
+            </div>
+  
+            <div>
+  
+              <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Payment Type
+              </p>
+  
+              <p class="mt-1 text-slate-900">
+                {{ order?.Type }}
+              </p>
+  
+            </div>
+  
+          </div>
+  
+          <div>
+  
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+              Shipping Address
+            </p>
+  
+            <p class="mt-1 text-slate-900">
+  
+              {{ order?.Order_City }},
+              {{ order?.Order_State }},
+              {{ order?.Order_Country }}
+  
+            </p>
+  
+          </div>
+  
+        </div>
+  
+        }
+  
+        <!-- ================= Add / Edit ================= -->
+  
+        @if (mode !== 'view') {
+  
+        <form  class="space-y-6">
+  
+          <!-- Customer -->
+  
+          <div>
+  
+            <label class="mb-2 block text-sm font-medium text-slate-700">
+              Customer
+            </label>
+  
+            <select
+              [(ngModel)]="formData.customerRef" name="customerRef" (change)="onCustomerChange(formData.customerRef)"
+              class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none">
+  
+              <option value="">Select Customer</option>
+  
+              @for (customer of customers; track customer._id) {
+  
+                <option [value]="customer._id">
+  
+                  {{ customer.Customer_FullName }}
+  
+                </option>
+  
+              }
+  
+            </select>
+  
+          </div>
+  
+          <!-- Shipping -->
+  
+          <div>
+  
+            <label class="mb-2 block text-sm font-medium text-slate-700">
+  
+              Shipping Method
+  
+            </label>
+  
+            <select
+              [(ngModel)]="formData.shippingRef" (change)="onShippingChange(formData.shippingRef)" name="shippingRef"
+              class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none">
+  
+              <option value="">Select Shipping</option>
+  
+              @for (shipping of shippingOptions; track shipping._id) {
+  
+                <option [value]="shipping._id">
+  
+                  {{ shipping.Shipping_Mode }}
+  
+                </option>
+  
+              }
+  
+            </select>
+  
+          </div>
+  
+          <!-- Date + Status -->
+  
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+  
+            <div>
+  
+              <label class="mb-2 block text-sm font-medium">
+  
+                Order Date
+  
+              </label>
+  
+              <input
+                type="date"
+                [(ngModel)]="formData.order_date_ui" name="orderDate" 
+                class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none">
+  
+            </div>
+  
+            <div>
+  
+              <label class="mb-2 block text-sm font-medium">
+  
+                Status
+  
+              </label>
+  
+              <select
+                [(ngModel)]="formData.Order_Status" name="type"
+                class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none">
+  
+                <option>Pending Payment</option>
+                <option>Processing</option>
+                <option>Complete</option>
+                <option>Closed</option>
+  
+              </select>
+  
+            </div>
+  
+          </div>
+  
+          <!-- Payment + Order ID -->
+  
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+  
+            <div>
+  
+              <label class="mb-2 block text-sm font-medium">
+  
+                Payment Type
+  
+              </label>
+  
+              <select
+                [(ngModel)]="formData.Type" name="type"
+                class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none">
+  
+                <option>CASH</option>
+                <option>DEBIT</option>
+                <option>TRANSFER</option>
+                <option>PENDING PAYMENT</option>
+  
+              </select>
+  
+            </div>
+  
+            <div>
+  
+              <label class="mb-2 block text-sm font-medium">
+  
+                Order ID
+  
+              </label>
+  
+              <input
+                type="number"
+                name="orderId"
+                [(ngModel)]="formData.Order_Id"
+                [readonly]="mode === 'edit'"
+                class="w-full rounded-lg border border-slate-300 px-4 py-2 bg-white focus:border-blue-500 focus:outline-none">
+  
+            </div>
+  
+          </div>
+  
+          <!-- Address -->
+  
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+  
+            <div>
+  
+              <label class="mb-2 block text-sm font-medium">
+  
+                City
+  
+              </label>
+  
+              <input
+              name="city"
+                [(ngModel)]="formData.Order_City"
+                class="w-full rounded-lg border border-slate-300 px-4 py-2">
+  
+            </div>
+  
+            <div>
+  
+              <label class="mb-2 block text-sm font-medium">
+  
+                State
+  
+              </label>
+  
+              <input
+                [(ngModel)]="formData.Order_State" name="state"
+                class="w-full rounded-lg border border-slate-300 px-4 py-2">
+  
+            </div>
+  
+          </div>
+  
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+  
+            <div>
+  
+              <label class="mb-2 block text-sm font-medium">
+  
+                Country
+  
+              </label>
+  
+              <input
+                [(ngModel)]="formData.Order_Country" name="country"
+                class="w-full rounded-lg border border-slate-300 px-4 py-2">
+  
+            </div>
+  
+            <div>
+  
+              <label class="mb-2 block text-sm font-medium">
+  
+                Region
+  
+              </label>
+  
+              <input
+                [(ngModel)]="formData.Order_Region" name="region"
+                class="w-full rounded-lg border border-slate-300 px-4 py-2">
+  
+            </div>
+  
+          </div>
+  
+          <div>
+  
+            <label class="mb-2 block text-sm font-medium">
+  
+              Market
+  
+            </label>
+  
+            <input
+              [(ngModel)]="formData.Market" name="market"
+              class="w-full rounded-lg border border-slate-300 px-4 py-2">
+  
+          </div>
+  
+        </form>
+  
+        }
+  
+      </div>
+  
+      <!-- ================= Footer ================= -->
+  
+      <div class="flex justify-end gap-3 border-t border-slate-200 px-6 py-5">
+  
+        <button
+          type="button"
+          (click)="close()"
+          class="rounded-lg border border-slate-300 px-5 py-2 transition hover:bg-slate-100">
+  
+          Cancel
+  
+        </button>
+  
+        @if (mode !== 'view') {
+  
+        <button
+          type="button"
+          (click)="save()"
+          class="rounded-lg bg-blue-600 px-5 py-2 font-medium text-white transition hover:bg-blue-700">
+  
+          {{ mode === 'add' ? 'Create Order' : 'Update Order' }}
+  
+        </button>
+  
+        }
+  
+      </div>
+  
+    </div>
+  
+  </div>
+  
+  }
