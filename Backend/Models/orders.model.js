@@ -10,6 +10,8 @@ const orderSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "shipping"
     },
+    order_date: Number,
+    shipping_date: Number,
     orderStatus : {
         type: String,
         enum: {
@@ -27,7 +29,7 @@ const orderSchema = new Schema({
     Type : {
          type: String,
         enum: { 
-            values: ["DEBIT", "TRANSFER", "CASH", "PENDING PAYMENT", ]
+            values: ["DEBIT", "TRANSFER", "CASH", "PENDING PAYMENT"]
         }
     }
 }, 

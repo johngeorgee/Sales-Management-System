@@ -39,7 +39,7 @@ const userSchema = new Schema({
      },
      roleId: {
       type: Schema.Types.ObjectId,
-      ref : "role"
+      ref : "roles"
      },
      isActive : Boolean
 },
