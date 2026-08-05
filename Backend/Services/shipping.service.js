@@ -7,10 +7,48 @@ const createShipping = async (data) => {
     return shipping;
 };
 
-const getShippings = async () => {
-    const shippings = await shippingModel.find();
+const getShippings = async (page=1 ,limit = 20) => {
+     const skip = (page - 1) * limit;
+    const shippings = await shippingModel.aggregate([
+  {
+    $lookup: {
+      from: "orders",
+      localField: "_id",
+      foreignField: "shippingRef",
+      as: "order"
+    }
+  },
+  {
+    $unwind: {
+      path: "$order",
+      preserveNullAndEmptyArrays: true
+    }
+  },
+  {
+    $project: {
+      Shipping_ID: 1,
+      Shipping_Mode: 1,
+      Delivery_Status: 1,
+      Days_for_shipping_real: 1,
+      Days_for_shipment_scheduled: 1,
+      Late_delivery_risk: 1,
+      Order_ID: "$order.Order_ID"
+    }
+  },
+  {
+    $skip: skip
+  }, 
+  {
+    $limit: limit
+  }
+]);
 
-    return shippings;
+    return {shippings, pagination: {
+        currentPage: page,
+        limit,
+        totalShippings: await shippingModel.countDocuments(),
+        totalPages: Math.ceil(await shippingModel.countDocuments() / limit)
+    }};
 };
 
 const getShippingById = async (id) => {

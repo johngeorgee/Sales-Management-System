@@ -2,223 +2,90 @@ const { orderModel } = require("../Models/orders.model")
 const { orderListModel } = require("../Models/orderList.model")
 const { shippingModel } = require("../Models/shipping.model")
 const { Customer } = require("../Models/customer.model");
-// const { getAllOrderItems } = require("../Controllers/order.controller");
 
-const createOrder = async(data) =>{
-    const {
-        customerRef,
-        shippingRef,
-        orderStatus,
-        orderAddress,
-        market,
-        type,
-        items
-    } = data;
-
-    //Validation 
-    validateOrderData(customerRef, shippingRef, items)
-
-     await checkCustomer(customerRef)
-
-    
-    await checkShipping(shippingRef)
-
-    //Create Order
-    const order = await orderModel.create({
-        customerRef,
-        shippingRef,
-        orderStatus,
-        orderAddress,
-        market,
-        Type: type
-    });
-    const orderss = await orderModel.findOne();
-
-console.log("ORDER SHIPPING REF:", orderss.shippingRef);
-
-console.log(
-    "REF MODEL:",
-    orderModel.schema.path("shippingRef").options.ref
-);
-
-console.log(
-    "SHIPPING MODEL NAME:",
-    shippingModel.modelName
-);
-
-console.log(
-    "SHIPPING COLLECTION:",
-    shippingModel.collection.name
-);
-    //Prepare Items & Validating Inputs  + Business Calculations 
-    const orderItems = prepareOrderItems(items, order._id)
-
-    //Create Order Items 
-    const createdItems = await orderListModel.insertMany(orderItems)
-
-    return {
-        order,
-        items: createdItems
-    }
-
-
+const createOrder = async (orderData) => {
+    const order = await orderModel.create(orderData);
+    return order;
 };
+const getOrders = async (page = 1, limit = 20) => {
 
-const getOrders = async () => {
-    const orders = await orderModel.find().populate("customerRef", "Customer_FullName Customer_Segment")
-    .populate("shippingRef", "Shipping_Mode Delivery_Status Days_for_shipping_real Days_for_shipment_scheduled Late_delivery_risk");
+    const skip = (page - 1) * limit;
 
-    if (!orders || orders.length === 0) {
-        throw new Error("No orders found");
-    }
+    const [orders, totalOrders] = await Promise.all([
+        orderModel
+            .find()
+            .skip(skip)
+            .limit(limit)
+            .populate("customerRef")
+            .populate("shippingRef"),
 
-    return orders;
-};
+        orderModel.countDocuments()
+    ]);
 
-const getOrderItems = async () => {
-    const orderItems = await orderListModel.find()
-    .populate("orderRef").populate("productRef");
+    const formattedOrders = await Promise.all(
 
-    if (!orderItems || orderItems.length === 0) {
-        throw new Error("No order items found");
-    }
+        orders.map(async (order) => {
 
-    return orderItems;
-};
+            const items = await orderListModel
+                .find({ orderRef: order._id })
+                .populate("productRef");
 
-const updateOrder = async (orderId, data) => {
-    const {
-        orderStatus,
-        orderAddress,
-        market,
-        type,
-        shippingRef
-    } = data;
+            const itemCount = items.reduce(
+                (sum, item) => sum + (item.Quantity || 0),
+                0
+            );
 
-    const order = await orderModel.findById(orderId);
+            const totalAmount = items.reduce(
+                (sum, item) => {
+                    const price = item.productRef?.Product_Price || 0;
+                    return sum + ((item.Quantity || 0) * price);
+                },
+                0
+            );
 
-    if (!order) {
-        throw new Error("Order not found");
-    }
+            return {
+                ...order.toObject(),
+                itemCount,
+                totalAmount
+            };
 
-    if (shippingRef) {
-        await checkShipping(shippingRef);
-    }
+        })
 
-    const updatedOrder = await orderModel.findByIdAndUpdate(
-        orderId,
-        {
-            orderStatus,
-            orderAddress,
-            market,
-            Type: type,
-            shippingRef
-        },
-        {
-            new: true,
-            runValidators: true
-        }
     );
 
-    return updatedOrder;
+    return {
+        orders: formattedOrders,
+        pagination: {
+            currentPage: page,
+            limit,
+            totalOrders,
+            totalPages: Math.ceil(totalOrders / limit)
+        }
+    };
+
 };
-
-
-const deleteOrder = async (orderId) => {
-    const order = await orderModel.findById(orderId);
-
+const getOrderById = async (id) => {
+    const order = await orderModel.findById(id).populate("customerRef").populate("shippingRef");
     if (!order) {
         throw new Error("Order not found");
     }
-
-    await orderModel.findByIdAndDelete(orderId);
-
-    return {
-        message: "Order deleted successfully"
-    };
-};
-
-
-function validateOrderData(customerId, shippingId, items){
-    if(!customerId || !shippingId){
-        throw new Error("Customer and Shipping are Required")
-    }
-    if (!items || !Array.isArray(items) || items.length === 0) {
-        throw new Error("Order must contain at least one item");
-    }
+    return order;
 }
-//Future Work 
-async function checkCustomer(customerId){
-     const customer = await Customer.findById(customerId);
-
-    if (!customer) {
-        throw new Error("Customer not found");
+const updateOrder = async (id, orderData) => {
+    const order = await orderModel.findByIdAndUpdate(id, orderData, { new: true, runValidators: true })
+    .populate("customerRef")
+    .populate("shippingRef");
+    if (!order) {
+        throw new Error("Order not found");
     }
-    return customer;
+    return order;
 }
- async function checkShipping(shippingId){
-         const shipping = await shippingModel.findById(shippingId);
-         console.log(shipping);
-         
-
-     if (!shipping) {
-         throw new Error("Shipping not found");
-     }
-
-     return shipping;
- }
-
-function calculations(productPrice,  productQuantity,productDiscount){
-        const grossSales = productPrice * productQuantity;
-
-        const salesPerCustomer = grossSales - productDiscount;
-
-        const benefitPerOrder = salesPerCustomer;
-
-        return { grossSales, salesPerCustomer, benefitPerOrder}
+const deleteOrder = async (id) => {
+    const order = await orderModel.findByIdAndDelete(id);
+    if (!order) {
+        throw new Error("Order not found");
+    }
+    return order;
 }
 
-function prepareOrderItems(items, orderId){
-        const orderItems = []
-        for (const item of items) {
-
-        if (!item.productId) {
-            throw new Error("Product ID is required");
-        }
-
-        if (!item.productPrice && item.productPrice !== 0) {
-            throw new Error("Product price is required");
-        }
-
-        if (!item.productQuantity  ) {
-            throw new Error("Product quantity is required");
-        }
-        if(item.productQuantity < 0){
-            throw new Error("Product quantity cannot be less than 1");
-        }
-
-        const productPrice = item.productPrice;
-        const productQuantity = item.productQuantity;
-
-        const productDiscount = item.productDiscount || 0;
-        const productDiscountRate = item.productDiscountRate || 0;
-        const  { grossSales, salesPerCustomer, benefitPerOrder } = calculations(productPrice, productQuantity, productDiscount)
-        
-         orderItems.push({
-             orderId: orderId,
-            productId: item.productId,
-
-            productPrice,
-            productQuantity,
-
-            productDiscount,
-            productDiscountRate,
-
-            grossSales,
-            salesPerCustomer,
-            benefitPerOrder
-    })
-    }
-    return orderItems;
-}
-module.exports = { createOrder, getOrders, getOrderItems, updateOrder, deleteOrder }
+module.exports = { createOrder, getOrders, getOrderById, updateOrder, deleteOrder }
