@@ -15,13 +15,18 @@ const checkPermissions = function (permission){
                 return res.status(404).send("Cannot find this user")
             }
             const roleId = foundUser.roleId;
+             if (!foundUser.roleId) {
+                return res.status(403).send({
+                    message: "User has no role assigned"
+                });
+            }
             const role = await roleModel.findById(roleId)
             if(!role){
                 return res.status(403).send("User Role Not Found")
             }
             if(!role.permissions.includes(permission)){
                  return res.status(403).json({
-                message: "Forbidden. You don't have permission to perform this action"
+                message: `Forbidden. You don't have ${permission} permission to perform this action`
                 });
             }
 
