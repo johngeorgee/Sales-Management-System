@@ -1,0 +1,21 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import 'tailwindcss';
+.product-category-panel {
+    max-height: 280px !important;
+    min-width: 220px !important;
+    border-radius: 8px !important;
+  }
+
+  .product-dialog {
+    border-radius: 12px;
+  }
+  
+  .product-dialog .mat-mdc-dialog-surface {
+    border-radius: 12px;
+  }
+  .product-dialog-content {
+    padding: 24px 24px 8px !important;
+    overflow-y: auto !important;
+    overflow-x: visible !important;
+  }
