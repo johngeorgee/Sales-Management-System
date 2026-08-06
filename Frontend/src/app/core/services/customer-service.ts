@@ -7,7 +7,7 @@ import { ICustomer } from '../Models/icustomer';
   providedIn: 'root',
 })
 export class CustomerService {
-  private apiUrl = 'http://localhost:3000/customers';
+  private apiUrl = 'http://localhost:5000/customers';
 
   constructor(private http: HttpClient) {}
 

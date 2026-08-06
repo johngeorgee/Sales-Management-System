@@ -1,32 +1,184 @@
-<h2 mat-dialog-title>{{data.mode === 'add' ? 'Add' : (data.mode === 'edit' ? 'Edit' : 'View')}} Customer</h2>
-<mat-dialog-content>
-  <form #form="ngForm">
-    <mat-form-field appearance="outline" class="w-full mb-2" *ngIf="data.mode !== 'view'">
-      <mat-label>Full Name</mat-label>
-      <input matInput [(ngModel)]="data.customer.name" name="name" required />
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="w-full mb-2" *ngIf="data.mode !== 'view'">
-      <mat-label>Segment</mat-label>
-      <mat-select [(ngModel)]="data.customer.segment" name="segment" required>
-        <mat-option value="Consumer">Consumer</mat-option>
-        <mat-option value="Corporate">Corporate</mat-option>
-        <mat-option value="Home Office">Home Office</mat-option>
-      </mat-select>
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="w-full mb-2" *ngIf="data.mode !== 'view'">
-      <mat-label>Location</mat-label>
-      <input matInput [(ngModel)]="data.customer.location" name="location" required />
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="w-full mb-2" *ngIf="data.mode !== 'view'">
-      <mat-label>Status</mat-label>
-      <mat-select [(ngModel)]="data.customer.status" name="status" required>
-        <mat-option value="Active">Active</mat-option>
-        <mat-option value="Inactive">Inactive</mat-option>
-      </mat-select>
-    </mat-form-field>
-  </form>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Cancel</button>
-  <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="dialogRef.close(data)">Save</button>
-</mat-dialog-actions>
+<div class="p-1 sm:p-2">
+  <!-- Dialog Header -->
+  <div class="flex items-center justify-between pb-4 mb-4 border-b border-gray-100">
+    <div class="flex items-center gap-3">
+      <div
+        class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center"
+      >
+        <mat-icon>
+          {{ data.mode === 'add' ? 'person_add' : data.mode === 'edit' ? 'edit_note' : 'badge' }}
+        </mat-icon>
+      </div>
+      <div>
+        <h2 mat-dialog-title class="!m-0 text-xl font-bold text-gray-800 leading-tight">
+          {{
+            data.mode === 'add'
+              ? 'Add New Customer'
+              : data.mode === 'edit'
+                ? 'Edit Customer'
+                : 'Customer Profile'
+          }}
+        </h2>
+        <p class="text-xs text-gray-400 m-0 mt-0.5">
+          {{ data.mode === 'view' ? 'Detailed customer information' : 'Fill in the details below' }}
+        </p>
+      </div>
+    </div>
+    <button mat-icon-button class="text-gray-400 hover:text-gray-600" mat-dialog-close>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="!p-0 !max-h-[75vh]">
+    <!-- ================= VIEW MODE ================= -->
+    <div *ngIf="data.mode === 'view'" class="space-y-4 py-1">
+      <!-- Profile Card -->
+      <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+        <div
+          class="w-14 h-14 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xl shadow-md"
+        >
+          {{
+            data.customer?.Customer_FullName
+              ? data.customer.Customer_FullName.charAt(0).toUpperCase()
+              : 'C'
+          }}
+        </div>
+        <div class="space-y-1">
+          <h3 class="text-lg font-bold text-gray-900 m-0">
+            {{ data.customer?.Customer_FullName || 'N/A' }}
+          </h3>
+          <span
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800"
+          >
+            {{ data.customer?.Customer_Segment || 'General' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Location Info Box -->
+      <div class="p-4 bg-white rounded-2xl border border-gray-100 space-y-3">
+        <div
+          class="flex items-center gap-2 text-indigo-600 font-semibold text-sm border-b border-gray-100 pb-2"
+        >
+          <mat-icon class="!w-5 !h-5 !text-lg">location_on</mat-icon>
+          <span>Location Details</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 text-sm">
+          <div>
+            <span class="text-xs text-gray-400 block mb-0.5">City</span>
+            <span class="font-medium text-gray-700">{{
+              data.customer?.location?.Customer_City || '-'
+            }}</span>
+          </div>
+          <div>
+            <span class="text-xs text-gray-400 block mb-0.5">Country</span>
+            <span class="font-medium text-gray-700">{{
+              data.customer?.location?.Customer_Country || '-'
+            }}</span>
+          </div>
+          <div class="col-span-2">
+            <span class="text-xs text-gray-400 block mb-0.5">Street Address</span>
+            <span class="font-medium text-gray-700">{{
+              data.customer?.location?.Customer_Street || '-'
+            }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= ADD / EDIT FORM MODE ================= -->
+    <form #form="ngForm" *ngIf="data.mode !== 'view'" class="pt-1 space-y-3">
+      <!-- Basic Info Section -->
+      <div class="space-y-3">
+        <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+          <mat-label>Full Name</mat-label>
+          <mat-icon matPrefix class="text-gray-400 mr-2">person</mat-icon>
+          <input
+            matInput
+            [(ngModel)]="data.customer.Customer_FullName"
+            name="Customer_FullName"
+            placeholder="e.g. John Doe"
+            required
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+          <mat-label>Segment</mat-label>
+          <mat-icon matPrefix class="text-gray-400 mr-2">category</mat-icon>
+          <mat-select [(ngModel)]="data.customer.Customer_Segment" name="Customer_Segment" required>
+            <mat-option value="Consumer">Consumer</mat-option>
+            <mat-option value="Corporate">Corporate</mat-option>
+            <mat-option value="Home Office">Home Office</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Location Section Divider -->
+      <div class="pt-2">
+        <div
+          class="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2"
+        >
+          <mat-icon class="!w-4 !h-4 !text-base text-gray-400">pin_drop</mat-icon>
+          <span>Address Details</span>
+        </div>
+
+        <!-- Location Fields Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <!-- City -->
+          <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+            <mat-label>City</mat-label>
+            <mat-icon matPrefix class="text-gray-400 mr-2">location_city</mat-icon>
+            <input
+              matInput
+              [(ngModel)]="data.customer.location.Customer_City"
+              name="Customer_City"
+              placeholder="e.g. Cairo"
+            />
+          </mat-form-field>
+
+          <!-- Country -->
+          <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+            <mat-label>Country</mat-label>
+            <mat-icon matPrefix class="text-gray-400 mr-2">public</mat-icon>
+            <input
+              matInput
+              [(ngModel)]="data.customer.location.Customer_Country"
+              name="Customer_Country"
+              placeholder="e.g. Egypt"
+            />
+          </mat-form-field>
+        </div>
+
+        <!-- Street -->
+        <mat-form-field appearance="outline" class="w-full mt-3" subscriptSizing="dynamic">
+          <mat-label>Street</mat-label>
+          <mat-icon matPrefix class="text-gray-400 mr-2">home</mat-icon>
+          <input
+            matInput
+            [(ngModel)]="data.customer.location.Customer_Street"
+            name="Customer_Street"
+            placeholder="e.g. 123 Main Street"
+          />
+        </mat-form-field>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <!-- Dialog Actions -->
+  <mat-dialog-actions align="end" class="!px-0 !pb-0 !pt-4 border-t border-gray-100 mt-4">
+    <button mat-stroked-button mat-dialog-close class="!rounded-xl">
+      {{ data.mode === 'view' ? 'Close' : 'Cancel' }}
+    </button>
+
+    <button
+      *ngIf="data.mode !== 'view'"
+      mat-flat-button
+      class="!bg-indigo-600 hover:!bg-indigo-700 !text-white !rounded-xl !px-6"
+      [disabled]="form.invalid"
+      (click)="dialogRef.close(data)"
+    >
+      Save Customer
+    </button>
+  </mat-dialog-actions>
+</div>

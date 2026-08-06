@@ -16,7 +16,7 @@ import { ShippingService } from '../../../core/services/shipping-service';
     CommonModule,
     FormsModule
   ],
-  
+
   templateUrl: './order-dialog.html',
   styleUrl: './order-dialog.css'
 })
@@ -150,7 +150,7 @@ export class OrderDialog implements OnInit, OnChanges {
       next: (response) => {
 
         this.shippingOptions = response.data;
-        
+
       },
 
       error: (err) => {
@@ -177,8 +177,7 @@ export class OrderDialog implements OnInit, OnChanges {
 
     this.formData.customerRef = customer._id;
 
-    this.formData.Customer_Id = customer.Customer_ID;
-
+this.formData.Customer_Id = customer.Customer_Id;
   }
 
   onShippingChange(shippingId: string): void {

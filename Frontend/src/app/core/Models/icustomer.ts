@@ -1,15 +1,21 @@
-import { ICustomerLocation } from "./icustomer-location";
+import { ICustomerLocation } from './icustomer-location';
 
 export interface ICustomer {
-    _id: string;
-    Customer_ID: number;
-    Customer_FullName: string;
-    Customer_Segment: customerSegment;
-    location: ICustomerLocation;
+  _id?: string;
+
+  Customer_Id: number;
+
+  Customer_FullName: string;
+
+  Customer_Segment: customerSegment;
+
+  location: ICustomerLocation;
 }
 
-export enum customerSegment{
-    Consumer= 'Consumer',
-    Corporate= 'Corporate',
-    HomeOffice= 'Home Office',
+export enum customerSegment {
+  Consumer = 'Consumer',
+
+  Corporate = 'Corporate',
+
+  HomeOffice = 'Home Office',
 }

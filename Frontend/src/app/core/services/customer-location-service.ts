@@ -7,7 +7,7 @@ import { ICustomerLocation } from '../Models/icustomer-location';
   providedIn: 'root',
 })
 export class CustomerLocationService {
-  private apiUrl = 'http://localhost:3000/customer-locations';
+  private apiUrl = 'http://localhost:5000/customer-locations';
 
   constructor(private http: HttpClient) {}
 
