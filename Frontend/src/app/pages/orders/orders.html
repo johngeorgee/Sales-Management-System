@@ -113,15 +113,7 @@
               <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">
                 Date
               </th>
-  
-              <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">
-                Items
-              </th>
-  
-              <th class="px-6 py-4 text-right text-sm font-semibold text-slate-600">
-                Total
-              </th>
-  
+    
               <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">
                 Payment
               </th>
@@ -190,7 +182,7 @@
   
                   <td class="px-6 py-4">
   
-                    {{order.customerRef.Customer_FullName}}
+                    {{order.customerRef!.Customer_FullName}}
   
                   </td>
   
@@ -200,21 +192,6 @@
                     {{formatDate(order.order_date)}}
   
                   </td>
-  
-  
-                  <td class="px-6 py-4 text-center">
-  
-                    {{order.itemCount}}
-  
-                  </td>
-  
-  
-                  <td class="px-6 py-4 text-right font-semibold">
-  
-                    ${{order.totalAmout | number:'1.2-2'}}
-  
-                  </td>
-  
   
                   <td class="px-6 py-4 text-center">
   
@@ -253,7 +230,7 @@
   
                   <td class="px-6 py-4 text-center">
   
-                    {{order.shippingRef.Shipping_Mode}}
+                    {{order.shippingRef!.Shipping_Mode}}
   
                   </td>
   

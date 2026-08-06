@@ -1,0 +1,185 @@
+<!-- customer-dialog/customer-dialog.html -->
+@if (isOpen) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div class="w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+          <h2 class="text-xl font-semibold text-slate-800">
+            @switch (mode) {
+              @case ('add') { Add New Customer }
+              @case ('edit') { Edit Customer }
+              @case ('view') { Customer Profile }
+            }
+          </h2>
+          <button
+            type="button"
+            (click)="close()"
+            class="rounded-lg p-2 transition hover:bg-slate-100">
+            ✕
+          </button>
+        </div>
+  
+        <!-- Body -->
+        <div class="max-h-[70vh] overflow-y-auto p-6">
+          @if (mode === 'view') {
+            <!-- View Mode -->
+            <div class="space-y-6">
+              <!-- Profile Card -->
+              <div class="flex items-center gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                <div class="flex h-14 w-14 items-center justify-center rounded-full bg-indigo-600 text-xl font-bold text-white shadow-md">
+                  {{ customer?.Customer_FullName?.charAt(0)?.toUpperCase() || 'C' }}
+                </div>
+                <div class="space-y-1">
+                  <h3 class="text-lg font-bold text-slate-900">{{ customer?.Customer_FullName || 'N/A' }}</h3>
+                  <span class="inline-flex rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-semibold text-indigo-800">
+                    {{ customer?.Customer_Segment || 'General' }}
+                  </span>
+                </div>
+              </div>
+  
+              <!-- Location Info -->
+              <div class="rounded-2xl border border-slate-100 bg-white p-4 space-y-3">
+                <div class="flex items-center gap-2 border-b border-slate-100 pb-2 text-sm font-semibold text-indigo-600">
+                  <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  </svg>
+                  <span>Location Details</span>
+                </div>
+                <div class="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <span class="block text-xs text-slate-400">City</span>
+                    <span class="font-medium text-slate-700">{{ customer!.location!.Customer_City || '-' }}</span>
+                  </div>
+                  <div>
+                    <span class="block text-xs text-slate-400">Country</span>
+                    <span class="font-medium text-slate-700">{{ customer!.location!.Customer_Country || '-' }}</span>
+                  </div>
+                  <div class="col-span-2">
+                    <span class="block text-xs text-slate-400">Street Address</span>
+                    <span class="font-medium text-slate-700">{{ customer!.location!.Customer_Street }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+  
+          @if (mode !== 'view') {
+            <!-- Add / Edit Mode -->
+            <form class="space-y-4">
+              <!-- Customer ID -->
+              <div>
+                <label class="mb-2 block text-sm font-medium text-slate-700">Customer ID</label>
+                <input
+                  type="number"
+                  [(ngModel)]="formData.Customer_Id"
+                  name="customerId"
+                  placeholder="Auto-generated"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none bg-slate-50"
+                  readonly
+                />
+              </div>
+  
+              <!-- Full Name -->
+              <div>
+                <label class="mb-2 block text-sm font-medium text-slate-700">Full Name *</label>
+                <input
+                  type="text"
+                  [(ngModel)]="formData.Customer_FullName"
+                  name="fullName"
+                  placeholder="e.g. John Doe"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
+                />
+              </div>
+  
+              <!-- Segment -->
+              <div>
+                <label class="mb-2 block text-sm font-medium text-slate-700">Segment *</label>
+                <select
+                  [(ngModel)]="formData.Customer_Segment"
+                  name="segment"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none">
+                  <option value="Consumer">Consumer</option>
+                  <option value="Corporate">Corporate</option>
+                  <option value="Home Office">Home Office</option>
+                </select>
+              </div>
+  
+              <!-- Location Section -->
+              <div class="pt-2">
+                <div class="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400">
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  </svg>
+                  <span>Address Details</span>
+                </div>
+  
+                <!-- City & Country -->
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="mb-1 block text-sm font-medium text-slate-700">City</label>
+                    <input
+                      type="text"
+                      [(ngModel)]="formData.location.Customer_City"
+                      name="city"
+                      placeholder="e.g. Cairo"
+                      class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label class="mb-1 block text-sm font-medium text-slate-700">Country</label>
+                    <input
+                      type="text"
+                      [(ngModel)]="formData.location.Customer_Country"
+                      name="country"
+                      placeholder="e.g. Egypt"
+                      class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+  
+                <!-- Street -->
+                <div class="mt-4">
+                  <label class="mb-1 block text-sm font-medium text-slate-700">Street</label>
+                  <input
+                    type="text"
+                    [(ngModel)]="formData.location.Customer_Street"
+                    name="street"
+                    placeholder="e.g. 123 Main Street"
+                    class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+  
+              @if (errorMessage) {
+                <div class="rounded-lg bg-red-50 p-3 text-sm text-red-600">
+                  {{ errorMessage }}
+                </div>
+              }
+            </form>
+          }
+        </div>
+  
+        <!-- Footer -->
+        <div class="flex justify-end gap-3 border-t border-slate-200 px-6 py-5">
+          <button
+            type="button"
+            (click)="close()"
+            class="rounded-lg border border-slate-300 px-5 py-2 transition hover:bg-slate-100">
+            {{ mode === 'view' ? 'Close' : 'Cancel' }}
+          </button>
+  
+          @if (mode !== 'view') {
+            <button
+              type="button"
+              (click)="save()"
+              [disabled]="isSaving"
+              class="rounded-lg bg-blue-600 px-5 py-2 font-medium text-white transition hover:bg-blue-700 disabled:opacity-50">
+              {{ isSaving ? 'Saving...' : mode === 'add' ? 'Add Customer' : 'Update Customer' }}
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  }

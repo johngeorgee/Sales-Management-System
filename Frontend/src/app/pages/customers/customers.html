@@ -1,184 +1,165 @@
-<div class="p-1 sm:p-2">
-  <!-- Dialog Header -->
-  <div class="flex items-center justify-between pb-4 mb-4 border-b border-gray-100">
-    <div class="flex items-center gap-3">
-      <div
-        class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center"
-      >
-        <mat-icon>
-          {{ data.mode === 'add' ? 'person_add' : data.mode === 'edit' ? 'edit_note' : 'badge' }}
-        </mat-icon>
-      </div>
-      <div>
-        <h2 mat-dialog-title class="!m-0 text-xl font-bold text-gray-800 leading-tight">
-          {{
-            data.mode === 'add'
-              ? 'Add New Customer'
-              : data.mode === 'edit'
-                ? 'Edit Customer'
-                : 'Customer Profile'
-          }}
-        </h2>
-        <p class="text-xs text-gray-400 m-0 mt-0.5">
-          {{ data.mode === 'view' ? 'Detailed customer information' : 'Fill in the details below' }}
-        </p>
-      </div>
+<!-- customers.html -->
+<div class="mx-auto max-w-7xl space-y-6">
+  <!-- Header -->
+  <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+    <div>
+      <h1 class="text-3xl font-bold text-slate-800">Customers</h1>
+      <p class="mt-1 text-sm text-slate-500">Manage and track your customer accounts and locations.</p>
     </div>
-    <button mat-icon-button class="text-gray-400 hover:text-gray-600" mat-dialog-close>
-      <mat-icon>close</mat-icon>
+    <button
+      (click)="createCustomer()"
+      class="rounded-xl bg-blue-600 px-5 py-3 font-medium text-white transition hover:bg-blue-700">
+      + Add Customer
     </button>
   </div>
 
-  <mat-dialog-content class="!p-0 !max-h-[75vh]">
-    <!-- ================= VIEW MODE ================= -->
-    <div *ngIf="data.mode === 'view'" class="space-y-4 py-1">
-      <!-- Profile Card -->
-      <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-        <div
-          class="w-14 h-14 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xl shadow-md"
-        >
-          {{
-            data.customer?.Customer_FullName
-              ? data.customer.Customer_FullName.charAt(0).toUpperCase()
-              : 'C'
-          }}
-        </div>
-        <div class="space-y-1">
-          <h3 class="text-lg font-bold text-gray-900 m-0">
-            {{ data.customer?.Customer_FullName || 'N/A' }}
-          </h3>
-          <span
-            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800"
-          >
-            {{ data.customer?.Customer_Segment || 'General' }}
-          </span>
-        </div>
-      </div>
+  <!-- Filters -->
+  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <!-- Search -->
+      <input
+        type="text"
+        placeholder="Search by name or ID..."
+        [(ngModel)]="searchQuery"
+        (input)="applyFilters()"
+        class="rounded-xl border border-slate-300 px-4 py-2 outline-none transition focus:border-blue-500">
 
-      <!-- Location Info Box -->
-      <div class="p-4 bg-white rounded-2xl border border-gray-100 space-y-3">
-        <div
-          class="flex items-center gap-2 text-indigo-600 font-semibold text-sm border-b border-gray-100 pb-2"
-        >
-          <mat-icon class="!w-5 !h-5 !text-lg">location_on</mat-icon>
-          <span>Location Details</span>
-        </div>
+      <!-- Segment Filter -->
+      <select
+        [(ngModel)]="selectedSegment"
+        (change)="applyFilters()"
+        class="rounded-xl border border-slate-300 px-4 py-2 outline-none focus:border-blue-500">
+        <option value="All Segments">All Segments</option>
+        <option value="Consumer">Consumer</option>
+        <option value="Corporate">Corporate</option>
+        <option value="Home Office">Home Office</option>
+      </select>
 
-        <div class="grid grid-cols-2 gap-3 text-sm">
-          <div>
-            <span class="text-xs text-gray-400 block mb-0.5">City</span>
-            <span class="font-medium text-gray-700">{{
-              data.customer?.location?.Customer_City || '-'
-            }}</span>
-          </div>
-          <div>
-            <span class="text-xs text-gray-400 block mb-0.5">Country</span>
-            <span class="font-medium text-gray-700">{{
-              data.customer?.location?.Customer_Country || '-'
-            }}</span>
-          </div>
-          <div class="col-span-2">
-            <span class="text-xs text-gray-400 block mb-0.5">Street Address</span>
-            <span class="font-medium text-gray-700">{{
-              data.customer?.location?.Customer_Street || '-'
-            }}</span>
-          </div>
-        </div>
-      </div>
+      <button
+        (click)="clearFilters()"
+        class="rounded-xl border border-slate-300 px-4 py-2 transition hover:bg-slate-100">
+        Clear Filters
+      </button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div class="overflow-x-auto">
+      <table class="min-w-full">
+        <thead class="bg-slate-50">
+          <tr>
+            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">Customer</th>
+            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">Segment</th>
+            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">Location</th>
+            <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if(loading) {
+            <tr>
+              <td colspan="4" class="py-20 text-center text-slate-500">Loading Customers...</td>
+            </tr>
+          } @else {
+            @if(filteredCustomers.length === 0) {
+              <tr>
+                <td colspan="4" class="py-20 text-center text-slate-500">No Customers Found</td>
+              </tr>
+            } @else {
+              @for(customer of filteredCustomers; track customer._id) {
+                <tr class="border-t transition hover:bg-slate-50">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-sm font-bold text-white shadow-sm">
+                        {{ getInitials(customer.Customer_FullName) }}
+                      </div>
+                      <div>
+                        <div class="font-semibold text-slate-900">{{ customer.Customer_FullName }}</div>
+                        <div class="text-xs text-slate-400 font-mono">ID: {{ customer.Customer_Id }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="inline-flex rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700 border border-indigo-100">
+                      {{ customer.Customer_Segment || 'General' }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-slate-600">
+                    <div class="flex items-center gap-1.5">
+                      <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                      </svg>
+                      <span>{{ customer.location?.Customer_City || '-' }}</span>
+                      <span *ngIf="customer.location!.Customer_Country" class="text-xs text-slate-400">
+                        ({{ customer.location!.Customer_Country }})
+                      </span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex justify-center gap-2">
+                      <button
+                        (click)="viewCustomer(customer._id!)"
+                        class="rounded-lg bg-slate-100 px-3 py-1 text-sm hover:bg-slate-200">
+                        View
+                      </button>
+                      <button
+                        (click)="editCustomer(customer)"
+                        class="rounded-lg bg-blue-100 px-3 py-1 text-sm text-blue-700 hover:bg-blue-200">
+                        Edit
+                      </button>
+                      <button
+                        (click)="deleteCustomer(customer._id!)"
+                        class="rounded-lg bg-red-100 px-3 py-1 text-sm text-red-700 hover:bg-red-200">
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            }
+          }
+        </tbody>
+      </table>
     </div>
 
-    <!-- ================= ADD / EDIT FORM MODE ================= -->
-    <form #form="ngForm" *ngIf="data.mode !== 'view'" class="pt-1 space-y-3">
-      <!-- Basic Info Section -->
-      <div class="space-y-3">
-        <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
-          <mat-label>Full Name</mat-label>
-          <mat-icon matPrefix class="text-gray-400 mr-2">person</mat-icon>
-          <input
-            matInput
-            [(ngModel)]="data.customer.Customer_FullName"
-            name="Customer_FullName"
-            placeholder="e.g. John Doe"
-            required
-          />
-        </mat-form-field>
+    <!-- Pagination -->
+    <div class="flex items-center justify-between border-t px-6 py-4">
+      <p class="text-sm text-slate-500">
+        Total Customers :
+        <span class="font-semibold">{{ totalCustomers }}</span>
+      </p>
 
-        <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
-          <mat-label>Segment</mat-label>
-          <mat-icon matPrefix class="text-gray-400 mr-2">category</mat-icon>
-          <mat-select [(ngModel)]="data.customer.Customer_Segment" name="Customer_Segment" required>
-            <mat-option value="Consumer">Consumer</mat-option>
-            <mat-option value="Corporate">Corporate</mat-option>
-            <mat-option value="Home Office">Home Office</mat-option>
-          </mat-select>
-        </mat-form-field>
+      <div class="flex items-center gap-3">
+        <button
+          (click)="previousPage()"
+          [disabled]="currentPage === 1"
+          class="rounded-lg border px-4 py-2 disabled:opacity-50">
+          Previous
+        </button>
+
+        <span class="font-medium">
+          {{ currentPage }}
+          /
+          {{ totalPages }}
+        </span>
+
+        <button
+          (click)="nextPage()"
+          [disabled]="currentPage === totalPages"
+          class="rounded-lg border px-4 py-2 disabled:opacity-50">
+          Next
+        </button>
       </div>
-
-      <!-- Location Section Divider -->
-      <div class="pt-2">
-        <div
-          class="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2"
-        >
-          <mat-icon class="!w-4 !h-4 !text-base text-gray-400">pin_drop</mat-icon>
-          <span>Address Details</span>
-        </div>
-
-        <!-- Location Fields Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <!-- City -->
-          <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
-            <mat-label>City</mat-label>
-            <mat-icon matPrefix class="text-gray-400 mr-2">location_city</mat-icon>
-            <input
-              matInput
-              [(ngModel)]="data.customer.location.Customer_City"
-              name="Customer_City"
-              placeholder="e.g. Cairo"
-            />
-          </mat-form-field>
-
-          <!-- Country -->
-          <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
-            <mat-label>Country</mat-label>
-            <mat-icon matPrefix class="text-gray-400 mr-2">public</mat-icon>
-            <input
-              matInput
-              [(ngModel)]="data.customer.location.Customer_Country"
-              name="Customer_Country"
-              placeholder="e.g. Egypt"
-            />
-          </mat-form-field>
-        </div>
-
-        <!-- Street -->
-        <mat-form-field appearance="outline" class="w-full mt-3" subscriptSizing="dynamic">
-          <mat-label>Street</mat-label>
-          <mat-icon matPrefix class="text-gray-400 mr-2">home</mat-icon>
-          <input
-            matInput
-            [(ngModel)]="data.customer.location.Customer_Street"
-            name="Customer_Street"
-            placeholder="e.g. 123 Main Street"
-          />
-        </mat-form-field>
-      </div>
-    </form>
-  </mat-dialog-content>
-
-  <!-- Dialog Actions -->
-  <mat-dialog-actions align="end" class="!px-0 !pb-0 !pt-4 border-t border-gray-100 mt-4">
-    <button mat-stroked-button mat-dialog-close class="!rounded-xl">
-      {{ data.mode === 'view' ? 'Close' : 'Cancel' }}
-    </button>
-
-    <button
-      *ngIf="data.mode !== 'view'"
-      mat-flat-button
-      class="!bg-indigo-600 hover:!bg-indigo-700 !text-white !rounded-xl !px-6"
-      [disabled]="form.invalid"
-      (click)="dialogRef.close(data)"
-    >
-      Save Customer
-    </button>
-  </mat-dialog-actions>
+    </div>
+  </div>
 </div>
+
+<!-- Customer Dialog -->
+<app-customer-dialog
+  [isOpen]="isDialogOpen"
+  [mode]="dialogMode"
+  [customer]="selectedCustomer"
+  (closed)="closeDialog()"
+  (saved)="saveCustomer($any($event))">
+</app-customer-dialog>

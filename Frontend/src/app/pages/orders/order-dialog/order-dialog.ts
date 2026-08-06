@@ -129,7 +129,7 @@ export class OrderDialog implements OnInit, OnChanges {
 
       next: (customers) => {
 
-        this.customers = customers;
+        this.customers = customers.data;
 
       },
 

@@ -1,32 +1,22 @@
+<!-- shipping.html -->
 <div class="mx-auto max-w-7xl space-y-6">
   <!-- Header -->
   <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
     <div>
-      <h1 class="text-3xl font-bold text-slate-800">
-        Shipping
-      </h1>
-      <p class="mt-1 text-sm text-slate-500">
-        Monitor shipments and delivery performance.
-      </p>
+      <h1 class="text-3xl font-bold text-slate-800">Shipping</h1>
+      <p class="mt-1 text-sm text-slate-500">Monitor shipments and delivery performance.</p>
     </div>
     <button
       (click)="createShipping()"
       class="rounded-xl bg-blue-600 px-5 py-3 font-medium text-white transition hover:bg-blue-700">
-
       + Create Shipping
-
     </button>
-
   </div>
-
 
   <!-- Filters -->
   <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-5">
-
       <!-- Search -->
-
       <input
         type="text"
         placeholder="Search Shipping..."
@@ -35,253 +25,155 @@
         class="rounded-xl border border-slate-300 px-4 py-2 outline-none transition focus:border-blue-500">
 
       <!-- Status -->
-
       <select
         [(ngModel)]="selectedStatus"
         (change)="applyFilters()"
         class="rounded-xl border border-slate-300 px-4 py-2 outline-none focus:border-blue-500">
-
         <option value="All">All Status</option>
         <option value="Advance Shipping">Advance Shipping</option>
         <option value="Shipping On Time">Shipping On Time</option>
         <option value="Late Delivery">Late Delivery</option>
         <option value="Shipping Cancelled">Shipping Cancelled</option>
-
       </select>
 
       <!-- Shipping Mode -->
-
       <select
         [(ngModel)]="selectedMode"
         (change)="applyFilters()"
         class="rounded-xl border border-slate-300 px-4 py-2 outline-none focus:border-blue-500">
-
         <option value="All">All Modes</option>
         <option value="Standard Class">Standard Class</option>
         <option value="First Class">First Class</option>
         <option value="Second Class">Second Class</option>
         <option value="Same Day">Same Day</option>
-
       </select>
 
       <!-- Risk -->
-
       <select
         [(ngModel)]="selectedRisk"
         (change)="applyFilters()"
         class="rounded-xl border border-slate-300 px-4 py-2 outline-none focus:border-blue-500">
-
         <option value="All">All Risks</option>
         <option value="No Risk">No Risk</option>
         <option value="High Risk">High Risk</option>
-
       </select>
 
       <button
         (click)="clearFilters()"
         class="rounded-xl border border-slate-300 px-4 py-2 transition hover:bg-slate-100">
-
         Clear Filters
-
       </button>
-
     </div>
-
   </div>
-
 
   <!-- Table -->
-
   <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-
     <div class="overflow-x-auto">
-
       <table class="min-w-full">
-
         <thead class="bg-slate-50">
-
           <tr>
-
-            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">
-              Shipping ID
-            </th>
-
-            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">
-              Order ID
-            </th>
-
-            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">
-              Shipping Mode
-            </th>
-
-            <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">
-              Delivery Status
-            </th>
-
-            <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">
-              Real Days
-            </th>
-
-            <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">
-              Scheduled Days
-            </th>
-
-            <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">
-              Risk
-            </th>
-
-            <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">
-              Actions
-            </th>
-
+            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">Shipping ID</th>
+            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">Shipping Mode</th>
+            <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">Delivery Status</th>
+            <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">Real Days</th>
+            <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">Risk</th>
+            <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">Actions</th>
           </tr>
-
         </thead>
-
         <tbody>
-
-          @if(filteredShipping.length === 0){
-
+          @if(loading) {
             <tr>
-
-              <td colspan="8" class="py-20 text-center text-slate-500">
-
-                No Shipping Records Found
-
-              </td>
-
+              <td colspan="6" class="py-20 text-center text-slate-500">Loading Shipping Records...</td>
             </tr>
-
-          }
-
-          @else {
-
-            @for(shipping of filteredShipping; track shipping.Shipping_ID){
-
-              <tr class="border-t transition hover:bg-slate-50">
-
-                <td class="px-6 py-4 font-medium">
-
-                  {{shipping.Shipping_ID}}
-
-                </td>
-
-                <td class="px-6 py-4">
-
-                  {{shipping.orderId}}
-
-                </td>
-
-                <td class="px-6 py-4">
-
-                  {{shipping.Shipping_Mode}}
-
-                </td>
-
-                <td class="px-6 py-4 text-center">
-
-                  <span
-                    class="rounded-full px-3 py-1 text-xs font-semibold"
-
-                    [ngClass]="{
-
-                      'bg-green-100 text-green-800':
-                      shipping.Delivery_Status === 'Advance Shipping',
-
-                      'bg-blue-100 text-blue-800':
-                      shipping.Delivery_Status=== 'Shipping On Time',
-
-                      'bg-yellow-100 text-yellow-800':
-                      shipping.Delivery_Status === 'Late Delivery',
-
-                      'bg-red-100 text-red-700':
-                      shipping.Delivery_Status === 'Shipping Cancelled'
-
-                    }">
-
-                    {{shipping.Delivery_Status}}
-
-                  </span>
-
-                </td>
-
-                <td class="px-6 py-4 text-center">
-
-                  {{shipping.Days_for_shipping_real}}
-
-                </td>
-
-                <td class="px-6 py-4 text-center">
-
-                  {{shipping.Days_for_shipping_scheduled}}
-
-                </td>
-
-                <td class="px-6 py-4 text-center">
-
-                  <span
-                    class="rounded-full px-3 py-1 text-xs font-semibold"
-
-                    [ngClass]="{
-
-                      'bg-green-100 text-green-800':
-                      shipping.Late_delivery_risk === 'No Risk',
-
-                      'bg-red-100 text-red-700':
-                      shipping.Late_delivery_risk === 'High Risk'
-
-                    }">
-
-                    {{shipping.Late_delivery_risk}}
-
-                  </span>
-
-                </td>
-
-                <td class="px-6 py-4">
-
-                  <div class="flex justify-center gap-2">
-
-                    <button
-                      (click)="viewShipping(shipping._id)"
-                      class="rounded-lg bg-slate-100 px-3 py-1 text-sm hover:bg-slate-200">
-
-                      View
-
-                    </button>
-
-                    <button
-                      (click)="editShipping(shipping._id)"
-                      class="rounded-lg bg-blue-100 px-3 py-1 text-sm text-blue-700 hover:bg-blue-200">
-
-                      Edit
-
-                    </button>
-
-                    <button
-                      (click)="deleteShipping(shipping._id)"
-                      class="rounded-lg bg-red-100 px-3 py-1 text-sm text-red-700 hover:bg-red-200">
-
-                      Delete
-
-                    </button>
-
-                  </div>
-
-                </td>
-
+          } @else {
+            @if(filteredShipping.length === 0) {
+              <tr>
+                <td colspan="6" class="py-20 text-center text-slate-500">No Shipping Records Found</td>
               </tr>
-
+            } @else {
+              @for(shipping of filteredShipping; track shipping._id) {
+                <tr class="border-t transition hover:bg-slate-50">
+                  <td class="px-6 py-4 font-medium">{{ shipping.Shipping_ID }}</td>
+                  <td class="px-6 py-4">{{ shipping.Shipping_Mode }}</td>
+                  <td class="px-6 py-4 text-center">
+                    <span
+                      class="rounded-full px-3 py-1 text-xs font-semibold"
+                      [ngClass]="getStatusClass(shipping.Delivery_Status)">
+                      {{ shipping.Delivery_Status }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-center">{{ shipping.Days_for_shipping_real }}</td>
+                  <td class="px-6 py-4 text-center">
+                    <span
+                      class="rounded-full px-3 py-1 text-xs font-semibold"
+                      [ngClass]="getRiskClass(shipping.Late_delivery_risk)">
+                      {{ shipping.Late_delivery_risk }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex justify-center gap-2">
+                      <button
+                        (click)="viewShipping(shipping._id)"
+                        class="rounded-lg bg-slate-100 px-3 py-1 text-sm hover:bg-slate-200">
+                        View
+                      </button>
+                      <button
+                        (click)="editShipping(shipping)"
+                        class="rounded-lg bg-blue-100 px-3 py-1 text-sm text-blue-700 hover:bg-blue-200">
+                        Edit
+                      </button>
+                      <button
+                        (click)="deleteShipping(shipping._id)"
+                        class="rounded-lg bg-red-100 px-3 py-1 text-sm text-red-700 hover:bg-red-200">
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
             }
-
           }
-
         </tbody>
-
       </table>
-
     </div>
 
-  </div>
+    <!-- Pagination -->
+    <div class="flex items-center justify-between border-t px-6 py-4">
+      <p class="text-sm text-slate-500">
+        Total Shipping Records :
+        <span class="font-semibold">{{ totalShippings }}</span>
+      </p>
 
+      <div class="flex items-center gap-3">
+        <button
+          (click)="previousPage()"
+          [disabled]="currentPage === 1"
+          class="rounded-lg border px-4 py-2 disabled:opacity-50">
+          Previous
+        </button>
+
+        <span class="font-medium">
+          {{ currentPage }}
+          /
+          {{ totalPages }}
+        </span>
+
+        <button
+          (click)="nextPage()"
+          [disabled]="currentPage === totalPages"
+          class="rounded-lg border px-4 py-2 disabled:opacity-50">
+          Next
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
+
+<!-- Shipping Dialog -->
+<app-shipping-dialog
+  [isOpen]="isDialogOpen"
+  [mode]="dialogMode"
+  [shipping]="selectedShipping"
+  (closed)="closeDialog()"
+  (saved)="saveShipping($any($event))">
+</app-shipping-dialog>

@@ -1,8 +1,10 @@
 // register.component.ts
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { UsersService } from '../../../core/services/users-service';
+import { AuthService } from '../../../core/services/auth-service';
 
 export interface UserRegistration {
   username: string;
@@ -17,29 +19,33 @@ export interface UserRegistration {
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, ReactiveFormsModule],
   templateUrl: './register.html',
   styleUrl: './register.css'
 })
 export class RegisterComponent {
-  user: UserRegistration = {
-    username: '',
-    password: '',
-    email: '',
-    isActive: true
-  };
-  
   hidePassword: boolean = true;
 
-  constructor(private router: Router) {}
+  loading = false;
+  error = '';
+  registerForm!: FormGroup
 
+  constructor(private router: Router, private fb: FormBuilder, private authServ: AuthService) {
+    this.registerForm = this.fb.group({
+      username: ['', [Validators.required]],
+      email : ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      phoneNumber: ['' ],
+      gender: ['', [Validators.required]],
+      age: ['', [Validators.minLength(18), Validators.maxLength(60)]]
+
+
+
+    })
+  }
+  
   isFormValid(): boolean {
-    return (
-      this.user.username?.trim()?.length > 0 &&
-      this.user.email?.trim()?.length > 0 &&
-      this.user.password?.length >= 8 &&
-      this.isValidEmail(this.user.email)
-    );
+    return this.registerForm.valid
   }
 
   isValidEmail(email: string): boolean {
@@ -49,24 +55,32 @@ export class RegisterComponent {
 
   onSubmit(): void {
     if (!this.isFormValid()) {
+      this.registerForm.markAllAsTouched();
       return;
     }
+    this.loading = true;
+    this.error = '';
 
-    // Implement your registration logic here
-    console.log('Registration attempt:', this.user);
-    
-    // You would typically call your registration service here
-    // this.authService.register(this.user).subscribe({
-    //   next: (response) => {
-    //     console.log('Registration successful', response);
-    //     this.router.navigate(['/login']);
-    //   },
-    //   error: (error) => {
-    //     console.error('Registration failed', error);
-    //   }
-    // });
-    
-    // For demo purposes, redirect to login
-    // this.router.navigate(['/login']);
+    const userData = this.registerForm.value;
+
+    this.authServ.register(userData).subscribe({
+      next: (response) => {
+        console.log('Registration successful', response);
+        this.loading = false;
+        this.router.navigate(['/login']);
+      },
+      error: (error) => {
+        console.error('Registration failed', error);
+        this.loading = false;
+        this.error = error.error?.message || 'Registration failed. Please try again.';
+      }
+    });
   }
+
+  // Helper getters for template
+  get username() { return this.registerForm.get('username'); }
+  get email() { return this.registerForm.get('email'); }
+  get password() { return this.registerForm.get('password'); }
+  get gender() { return this.registerForm.get('gender'); }
+  get age() { return this.registerForm.get('age'); }
 }

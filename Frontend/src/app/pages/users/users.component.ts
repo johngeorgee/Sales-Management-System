@@ -1,89 +1,130 @@
-import { Component } from '@angular/core';
+// features/users/users.component.ts
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatDialogModule } from '@angular/material/dialog';
-
-interface User {
-  id: string;
-  fullName: string;
-  email: string;
-  role: string;
-  status: 'Active' | 'Inactive';
-  lastLogin: string;
-}
+import { IUser } from '../../core/Models/iuser';
+import { UserDialogComponent } from './user-dialog/user-dialog';
+import { UsersService } from '../../core/services/users-service';
 
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    MatTableModule,
-    MatButtonModule,
-    MatIconModule,
-    MatInputModule,
-    MatSelectModule,
-    MatChipsModule,
-    MatDialogModule,
-  ],
-  templateUrl: './users.component.html',
-  styleUrls: ['./users.component.css'],
+  imports: [CommonModule, FormsModule, UserDialogComponent],
+  templateUrl: './users.component.html'
 })
-export class UsersComponent {
-  // Mock data
-  users: User[] = [
-    { id: 'U-001', fullName: 'Alice Johnson', email: 'alice@example.com', role: 'Administrator', status: 'Active', lastLogin: '2024-07-20' },
-    { id: 'U-002', fullName: 'Bob Smith', email: 'bob@example.com', role: 'Sales Manager', status: 'Active', lastLogin: '2024-07-18' },
-    { id: 'U-003', fullName: 'Carol Lee', email: 'carol@example.com', role: 'Sales Representative', status: 'Inactive', lastLogin: '2024-06-30' },
-    { id: 'U-004', fullName: 'David Kim', email: 'david@example.com', role: 'Inventory Manager', status: 'Active', lastLogin: '2024-07-19' },
-    { id: 'U-005', fullName: 'Eve Martinez', email: 'eve@example.com', role: 'Purchasing Manager', status: 'Active', lastLogin: '2024-07-15' },
-    { id: 'U-006', fullName: 'Frank Zhou', email: 'frank@example.com', role: 'Accountant', status: 'Inactive', lastLogin: '2024-06-25' },
-  ];
+export class UsersComponent implements OnInit {
+  users: IUser[] = [];
+  filteredUsers: IUser[] = [];
+  loading = false;
 
-  displayedColumns: string[] = ['avatar', 'fullName', 'id', 'email', 'role', 'status', 'lastLogin', 'actions'];
+  // Filters
+  searchQuery = '';
+  selectedRole = '';
+  selectedStatus = '';
 
-  // Toolbar filters
-  searchTerm: string = '';
-  selectedRole: string = '';
-  selectedStatus: string = '';
+  // Dialog
+  isDialogOpen = false;
+  dialogMode: 'add' | 'edit' | 'view' = 'add';
+  selectedUser: IUser | null = null;
 
-  get filteredUsers(): User[] {
-    return this.users.filter(u => {
-      const matchesSearch = this.searchTerm
-        ? u.fullName.toLowerCase().includes(this.searchTerm.toLowerCase()) || u.email.toLowerCase().includes(this.searchTerm.toLowerCase()) || u.id.toLowerCase().includes(this.searchTerm.toLowerCase())
-        : true;
-      const matchesRole = this.selectedRole ? u.role === this.selectedRole : true;
-      const matchesStatus = this.selectedStatus ? u.status === this.selectedStatus : true;
+  constructor(private userService: UsersService) {}
+
+  ngOnInit() {
+    this.loadUsers();
+  }
+
+  loadUsers() {
+    this.loading = true;
+    this.userService.getUsers().subscribe({
+      next: (users: IUser[]) => {
+        this.users = users;
+        this.applyFilters();
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error loading users:', err);
+        this.loading = false;
+      }
+    });
+  }
+
+  applyFilters() {
+    const search = this.searchQuery.toLowerCase();
+    this.filteredUsers = this.users.filter(user => {
+      const matchesSearch = 
+        user.username.toLowerCase().includes(search) ||
+        user.email.toLowerCase().includes(search);
+
+      const matchesRole = 
+        !this.selectedRole || 
+        user.role?.name === this.selectedRole;
+
+      const matchesStatus = 
+        !this.selectedStatus ||
+        (this.selectedStatus === 'Active' && user.isActive) ||
+        (this.selectedStatus === 'Inactive' && !user.isActive);
+
       return matchesSearch && matchesRole && matchesStatus;
     });
   }
 
   clearFilters() {
-    this.searchTerm = '';
+    this.searchQuery = '';
     this.selectedRole = '';
     this.selectedStatus = '';
+    this.applyFilters();
   }
 
-  // Placeholder methods for actions
-  addUser() {
-    console.log('Add User clicked');
+  getUniqueRoles(): any[] {
+    const roles = this.users
+      .map(user => user.role?.name)
+      .filter(role => role);
+    return [...new Set(roles)];
   }
 
-  viewUser(user: User) {
-    console.log('View user', user);
+  getInitials(username: string): string {
+    if (!username) return '';
+    return username.charAt(0).toUpperCase();
   }
 
-  editUser(user: User) {
-    console.log('Edit user', user);
+  // Dialog methods
+  createUser() {
+    this.dialogMode = 'add';
+    this.selectedUser = null;
+    this.isDialogOpen = true;
   }
 
-  deleteUser(user: User) {
-    console.log('Delete user', user);
+  viewUser(user: IUser) {
+    this.dialogMode = 'view';
+    this.selectedUser = user;
+    this.isDialogOpen = true;
+  }
+
+  editUser(user: IUser) {
+    this.dialogMode = 'edit';
+    this.selectedUser = user;
+    this.isDialogOpen = true;
+  }
+
+  deleteUser(user: IUser) {
+    if (confirm(`Are you sure you want to delete user "${user.username}"?`)) {
+      this.userService.deleteUser(user._id).subscribe({
+        next: () => {
+          this.loadUsers();
+        },
+        error: (err) => {
+          console.error('Error deleting user:', err);
+        }
+      });
+    }
+  }
+
+  closeDialog() {
+    this.isDialogOpen = false;
+    this.selectedUser = null;
+  }
+
+  saveUser(event: any) {
+    this.loadUsers();
   }
 }

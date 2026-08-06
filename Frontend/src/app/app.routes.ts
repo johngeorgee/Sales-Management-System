@@ -18,30 +18,143 @@ import { UsersComponent } from './pages/users/users.component';
 import { RolesComponent } from './pages/roles/roles.component';
 import { RoleDetailsComponent } from './pages/roles/role-details/role-details.component';
 import { RegisterComponent } from './pages/Auth/register/register';
+import { authGuard } from './core/guards/auth.guard';
 export const routes: Routes = [
-  { path: 'login', component: LoginComponent },
-  {path: 'register', component: RegisterComponent},
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./pages/Auth/Login/login.component')
+        .then(m => m.LoginComponent)
+  },
+
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./pages/Auth/register/register')
+        .then(m => m.RegisterComponent)
+  },
+
   {
     path: '',
     component: LayoutComponent,
     children: [
-      { path: 'dashboard', component: DashboardComponent },
-      { path: 'products', component: ProductsComponent },
-      { path: 'categories', component: CategoriesComponent },
-      { path: 'customers', component: CustomersComponent },
-      { path: 'suppliers', component: SuppliersComponent },
-      { path: 'orders', component: OrdersComponent },
-      { path: 'orders-items/:id', component: OrderDetailsComponent },
-      { path: 'shipping', component: ShippingComponent },
-      { path: 'inventory', component: InventoryComponent },
-      { path: 'purchases', component: PurchasesComponent },
-      { path: 'purchases/:id', component: PurchaseDetailsComponent },
-      { path: 'reports', component: ReportsComponent },
-  
-      { path: 'users', component: UsersComponent },
-      { path: 'roles', component: RolesComponent },
-      { path: 'roles/:id', component: RoleDetailsComponent },
+
+      {
+        path: 'dashboard',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/Dashboard/dashboard.component')
+            .then(m => m.DashboardComponent)
+      },
+
+      {
+        path: 'products',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/catalog/products/products.component')
+            .then(m => m.ProductsComponent)
+      },
+
+      {
+        path: 'categories',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/catalog/categories/categories.component')
+            .then(m => m.CategoriesComponent)
+      },
+
+      {
+        path: 'customers',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/customers/customers.component')
+            .then(m => m.CustomersComponent)
+      },
+
+      {
+        path: 'suppliers',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/suppliers/suppliers.component')
+            .then(m => m.SuppliersComponent)
+      },
+
+      {
+        path: 'orders',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/orders/orders.component')
+            .then(m => m.OrdersComponent)
+      },
+
+      {
+        path: 'shipping',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/shipping/shipping.component')
+            .then(m => m.ShippingComponent)
+      },
+
+      {
+        path: 'inventory',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/inventory/inventory.component')
+            .then(m => m.InventoryComponent)
+      },
+
+      {
+        path: 'purchases',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/purchases/purchases.component')
+            .then(m => m.PurchasesComponent)
+      },
+
+      {
+        path: 'purchases/:id',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/purchases/purchase-details/purchase-details.component')
+            .then(m => m.PurchaseDetailsComponent)
+      },
+
+      {
+        path: 'reports',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/reports/reports.component')
+            .then(m => m.ReportsComponent)
+      },
+
+      {
+        path: 'users',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/users/users.component')
+            .then(m => m.UsersComponent)
+      },
+
+      {
+        path: 'roles',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/roles/roles.component')
+            .then(m => m.RolesComponent)
+      },
+
+      {
+        path: 'roles/:id',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/roles/role-details/role-details.component')
+            .then(m => m.RoleDetailsComponent)
+      }
     ]
   },
-  { path: '**', redirectTo: 'login' }
+
+  {
+    path: '**',
+    redirectTo: 'login'
+  }
 ];

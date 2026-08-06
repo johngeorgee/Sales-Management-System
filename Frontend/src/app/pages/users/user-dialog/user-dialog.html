@@ -1,0 +1,193 @@
+<!-- features/users/user-dialog/user-dialog.component.html -->
+@if (isOpen) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div class="w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+          <h2 class="text-xl font-semibold text-slate-800">
+            @switch (mode) {
+              @case ('add') {
+                Add New User
+              }
+              @case ('edit') {
+                Edit User
+              }
+              @case ('view') {
+                User Details
+              }
+            }
+          </h2>
+          <button
+            type="button"
+            (click)="close()"
+            class="rounded-lg p-2 transition hover:bg-slate-100">
+            ✕
+          </button>
+        </div>
+  
+        <!-- Body -->
+        <div class="max-h-[70vh] overflow-y-auto p-6">
+          @if (mode === 'view') {
+            <!-- View Mode -->
+            <div class="space-y-6">
+              <div class="flex items-center gap-4 rounded-lg bg-slate-50 p-4">
+                <div class="flex h-16 w-16 items-center justify-center rounded-full bg-blue-500 text-2xl font-medium text-white">
+                  {{ getInitials(user?.username) }}
+                </div>
+                <div>
+                  <h3 class="text-lg font-semibold">{{ user?.username }}</h3>
+                  <p class="text-sm text-slate-500">{{ user?.email }}</p>
+                </div>
+              </div>
+  
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Username</p>
+                  <p class="mt-1 text-slate-900">{{ user?.username }}</p>
+                </div>
+                <div>
+                  <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Email</p>
+                  <p class="mt-1 text-slate-900">{{ user?.email }}</p>
+                </div>
+                <div>
+                  <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Role</p>
+                  <p class="mt-1 text-slate-900">{{ user?.role?.name || 'No role assigned' }}</p>
+                </div>
+                <div>
+                  <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Status</p>
+                  <span
+                    class="mt-1 inline-flex rounded-full px-3 py-1 text-xs font-semibold"
+                    [ngClass]="{
+                      'bg-green-100 text-green-800': user?.isActive,
+                      'bg-red-100 text-red-700': !user?.isActive
+                    }">
+                    {{ user?.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </div>
+                <div class="md:col-span-2">
+                  <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Permissions</p>
+                  <div class="mt-1 flex flex-wrap gap-1">
+                    @for (perm of user!.role!.permissions; track perm) {
+                      <span class="rounded bg-slate-100 px-2 py-1 text-xs text-slate-700">
+                        {{ perm }}
+                      </span>
+                    } @empty {
+                      <span class="text-sm text-slate-400">No permissions</span>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+  
+          @if (mode !== 'view') {
+            <!-- Add / Edit Mode -->
+            <form class="space-y-6">
+              <!-- Username -->
+              <div>
+                <label class="mb-2 block text-sm font-medium text-slate-700">
+                  Username <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  [(ngModel)]="formData.username"
+                  name="username"
+                  placeholder="Enter username"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
+                  required>
+              </div>
+  
+              <!-- Email -->
+              <div>
+                <label class="mb-2 block text-sm font-medium text-slate-700">
+                  Email <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  [(ngModel)]="formData.email"
+                  name="email"
+                  placeholder="Enter email"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
+                  required>
+              </div>
+  
+              <!-- Password (Only for Add) -->
+              @if (mode === 'add') {
+                <div>
+                  <label class="mb-2 block text-sm font-medium text-slate-700">
+                    Password <span class="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="password"
+                    [(ngModel)]="formData.password"
+                    name="password"
+                    placeholder="Enter password (min 8 characters)"
+                    class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
+                    required>
+                  <p class="mt-1 text-xs text-slate-500">Minimum 8 characters</p>
+                </div>
+              }
+  
+              <!-- Role -->
+              <div>
+                <label class="mb-2 block text-sm font-medium text-slate-700">
+                  Role
+                </label>
+                <select
+                  [(ngModel)]="formData.roleId"
+                  name="roleId"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none">
+                  <option value="">Select Role</option>
+                  @for (role of roles; track role._id) {
+                    <option [value]="role._id">
+                      {{ role.name }}
+                    </option>
+                  }
+                </select>
+              </div>
+  
+              <!-- Status -->
+              <div>
+                <label class="mb-2 block text-sm font-medium text-slate-700">
+                  Status
+                </label>
+                <select
+                  [(ngModel)]="formData.isActive"
+                  name="isActive"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none">
+                  <option [value]="true">Active</option>
+                  <option [value]="false">Inactive</option>
+                </select>
+              </div>
+  
+              @if (errorMessage) {
+                <div class="rounded-lg bg-red-50 p-3 text-sm text-red-600">
+                  {{ errorMessage }}
+                </div>
+              }
+            </form>
+          }
+        </div>
+  
+        <!-- Footer -->
+        <div class="flex justify-end gap-3 border-t border-slate-200 px-6 py-5">
+          <button
+            type="button"
+            (click)="close()"
+            class="rounded-lg border border-slate-300 px-5 py-2 transition hover:bg-slate-100">
+            {{ mode === 'view' ? 'Close' : 'Cancel' }}
+          </button>
+  
+          @if (mode !== 'view') {
+            <button
+              type="button"
+              (click)="save()"
+              [disabled]="isSaving"
+              class="rounded-lg bg-blue-600 px-5 py-2 font-medium text-white transition hover:bg-blue-700 disabled:opacity-50">
+              {{ isSaving ? 'Saving...' : mode === 'add' ? 'Add User' : 'Update User' }}
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  }

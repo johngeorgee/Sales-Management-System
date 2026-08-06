@@ -1,14 +1,6 @@
-import { MatDividerModule } from '@angular/material/divider';
+// categories.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatCardModule } from '@angular/material/card';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { CategoryDialog } from './category-dialog/category-dialog';
 import { IProduct } from '../../../core/Models/product.model';
@@ -19,155 +11,141 @@ import { CategoryService } from '../../../core/services/category-service';
 @Component({
   selector: 'app-categories',
   standalone: true,
-    imports: [
-      CommonModule,
-      MatTableModule,
-      MatButtonModule,
-      MatIconModule,
-      MatInputModule,
-      MatSelectModule,
-      MatCardModule,
-      MatMenuModule,
-      MatDialogModule,
-      FormsModule,
-      MatDividerModule,
-      
-    ],
-  templateUrl: './categories.html' ,
+  imports: [
+    CommonModule,
+    FormsModule,
+    CategoryDialog  // ✅ Added missing import
+  ],
+  templateUrl: './categories.html',
   styleUrl: './categories.css'
 })
 export class CategoriesComponent implements OnInit {
-  products: IProduct[] = []
-  categories: ICategories[] = []
-  
-  displayedColumns: string[] = ['category', 'categoryId', 'products', 'Department', 'actions'];
-  
- 
+  products: IProduct[] = [];
+  categories: ICategories[] = [];
   filteredCategories: ICategories[] = [];
-
+  loading = false;  // ✅ Fixed: changed from 'any' to 'false'
   searchQuery = '';
 
+  // Dialog properties
+  isDialogOpen = false;
+  dialogMode: 'add' | 'edit' | 'view' = 'add';
+  selectedCategory: ICategories | null = null;
 
-  constructor(private dialog: MatDialog, private productServ: ProductService, private categoryServ:CategoryService) {}
+  constructor(
+    private productService: ProductService,
+    private categoryService: CategoryService
+  ) {}
+
   ngOnInit(): void {
-   this.loadCategories();
-   this.loadProducts();
+    this.loadCategories();
+    this.loadProducts();
   }
 
-  filterData() : void {
+  filterData(): void {
     const search = this.searchQuery.toLowerCase();
-    this.filteredCategories = this.categories.filter(category =>{
+    this.filteredCategories = this.categories.filter(category => {
       const matchesSearch = category.Category_Name.toLowerCase().includes(search);
       return matchesSearch;
-    })
-   
-
-  }
-
-  openDialog(mode: 'add' | 'edit' | 'view', category?: ICategories) {
-    const dialogRef = this.dialog.open(CategoryDialog, {
-      width: '400px',
-      data: { mode, category: category || null }
-    });
-    dialogRef.afterClosed().subscribe(result => {
-
-      if (!result) {
-        console.log("Action Not Completed");
-        
-        return;
-      }
-  
-      if (result.action === 'add') {
-        this.addCategory(result.category);
-      }
-  
-      if (result.action === 'edit') {
-        this.updateCategory(result.category);
-      }
-  
     });
   }
+
+  clearFilters(): void {
+    this.searchQuery = '';
+    this.filterData();
+  }
+
+  // Dialog methods
+  openDialog(mode: 'add' | 'edit' | 'view', category?: ICategories): void {
+    this.dialogMode = mode;
+    this.selectedCategory = category || null;
+    this.isDialogOpen = true;
+  }
+
+  closeDialog(): void {
+    this.isDialogOpen = false;
+    this.selectedCategory = null;
+  }
+
+  saveCategory(category: ICategories): void {
+    if (this.dialogMode === 'add') {
+      this.addCategory(category);
+    } else if (this.dialogMode === 'edit') {
+      this.updateCategory(category);
+    }
+  }
+
   loadProducts(): void {
-    this.productServ.getProducts().subscribe({
-      next: (response) =>{
-        this.products = response.data;
-        console.log(response);
-        this.filterData();
-        
-      }
-    })
-  }
-
-  loadCategories(): void{
-    this.categoryServ.getCategories().subscribe({
-      next: (response)=>{
-        this.categories = response.data
-        console.log(response); console.log(
-          'DEPARTMENT:',
-          this.categories[0]?.departmentRef
-        );
-        console.log(
-          'DEPARTMENT NAME:',
-          this.categories[0]?.departmentRef?.Department_Name
-        );
-        this.filterData()
-      }
-    })
-  }
-
-  addCategory(category: ICategories) : void {
-    this.categoryServ.addCategory(category).subscribe({
-      next: (response)=>{
-        console.log('Category Added', response);
-        this.loadCategories()        
-      },
-      error: (error)=>{
-        console.log('Error Adding Category', error);
-        
-      }
-    })
-  }
-  
-  updateCategory(category: ICategories): void {
-
-    this.categoryServ.updateCategory(
-      category._id,
-      category
-    ).subscribe({
+    this.productService.getProducts().subscribe({
       next: (response) => {
-  
-        console.log(response);
-  
-        this.loadCategories();
-  
+        this.products = response.data;
+        console.log('Products loaded:', response);
       },
-  
       error: (error) => {
-        console.error('Failed to update category', error);
+        console.error('Error loading products:', error);
       }
     });
-  
+  }
+
+  loadCategories(): void {
+    this.loading = true;
+    this.categoryService.getCategories().subscribe({
+      next: (response) => {
+        this.categories = response.data;
+        console.log('Categories loaded:', response);
+        this.filterData();
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading categories:', error);
+        this.loading = false;
+      }
+    });
+  }
+
+  addCategory(category: ICategories): void {
+    this.categoryService.addCategory(category).subscribe({
+      next: (response) => {
+        console.log('Category Added:', response);
+        this.closeDialog();
+        this.loadCategories();
+      },
+      error: (error) => {
+        console.error('Error Adding Category:', error);
+      }
+    });
+  }
+
+  updateCategory(category: ICategories): void {
+    this.categoryService.updateCategory(category._id, category).subscribe({
+      next: (response) => {
+        console.log('Category Updated:', response);
+        this.closeDialog();
+        this.loadCategories();
+      },
+      error: (error) => {
+        console.error('Failed to update category:', error);
+      }
+    });
   }
 
   deleteCategory(id: string): void {
+    const confirmed = confirm('Are you sure you want to delete this category?');
+    if (!confirmed) return;
 
-    this.categoryServ.deleteCategory(id).subscribe({
+    this.categoryService.deleteCategory(id).subscribe({
       next: (response) => {
-          console.log(response);
-          this.loadCategories();
-  
+        console.log('Category Deleted:', response);
+        this.loadCategories();
       },
-  
       error: (error) => {
-        console.error('Failed to delete category', error);
+        console.error('Failed to delete category:', error);
       }
     });
-  
-  }
-  getProductCount(categoryId: number): number {
-    return this.products.filter(
-      product => product.categoryRef.Category_Id === categoryId
-    ).length;
   }
 
+  getProductCount(categoryId: number): number {
+    return this.products.filter(
+      product => product.categoryRef?.Category_Id === categoryId
+    ).length;
+  }
 }

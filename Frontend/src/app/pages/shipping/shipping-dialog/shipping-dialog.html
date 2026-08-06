@@ -1,0 +1,183 @@
+<!-- shipping-dialog/shipping-dialog.html -->
+@if (isOpen) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div class="w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+          <h2 class="text-xl font-semibold text-slate-800">
+            @switch (mode) {
+              @case ('add') { Add Shipping }
+              @case ('edit') { Edit Shipping }
+              @case ('view') { Shipping Details }
+            }
+          </h2>
+          <button
+            type="button"
+            (click)="close()"
+            class="rounded-lg p-2 transition hover:bg-slate-100">
+            ✕
+          </button>
+        </div>
+  
+        <!-- Body -->
+        <div class="max-h-[70vh] overflow-y-auto p-6">
+          @if (mode === 'view') {
+            <!-- View Mode -->
+            <div class="space-y-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Shipping ID</p>
+                  <p class="mt-1 text-slate-900">{{ shipping?.Shipping_ID }}</p>
+                </div>
+                <div>
+                  <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Shipping Mode</p>
+                  <p class="mt-1 text-slate-900">{{ shipping?.Shipping_Mode }}</p>
+                </div>
+                <div>
+                  <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Delivery Status</p>
+                  <span
+                    class="mt-1 inline-flex rounded-full px-3 py-1 text-xs font-semibold"
+                    [ngClass]="{
+                      'bg-green-100 text-green-800': shipping?.Delivery_Status === 'Advance Shipping',
+                      'bg-blue-100 text-blue-800': shipping?.Delivery_Status === 'Shipping On Time',
+                      'bg-yellow-100 text-yellow-800': shipping?.Delivery_Status === 'Late Delivery',
+                      'bg-red-100 text-red-700': shipping?.Delivery_Status === 'Shipping Cancelled'
+                    }">
+                    {{ shipping?.Delivery_Status }}
+                  </span>
+                </div>
+                <div>
+                  <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Risk</p>
+                  <span
+                    class="mt-1 inline-flex rounded-full px-3 py-1 text-xs font-semibold"
+                    [ngClass]="{
+                      'bg-green-100 text-green-800': shipping?.Late_delivery_risk === 'No Risk',
+                      'bg-red-100 text-red-700': shipping?.Late_delivery_risk === 'High Risk'
+                    }">
+                    {{ shipping?.Late_delivery_risk }}
+                  </span>
+                </div>
+                <div>
+                  <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Real Days</p>
+                  <p class="mt-1 text-slate-900">{{ shipping?.Days_for_shipping_real }}</p>
+                </div>
+                <div>
+                  <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Scheduled Days</p>
+                  <p class="mt-1 text-slate-900">{{ shipping?.Days_for_shipping_scheduled }}</p>
+                </div>
+              </div>
+            </div>
+          }
+  
+          @if (mode !== 'view') {
+            <!-- Add / Edit Mode -->
+            <form class="space-y-4">
+              <!-- Shipping ID -->
+              <div>
+                <label class="mb-2 block text-sm font-medium text-slate-700">Shipping ID *</label>
+                <input
+                  type="number"
+                  [(ngModel)]="formData.Shipping_ID"
+                  name="shippingId"
+                  placeholder="Enter shipping ID"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none">
+              </div>
+  
+              <!-- Shipping Mode -->
+              <div>
+                <label class="mb-2 block text-sm font-medium text-slate-700">Shipping Mode *</label>
+                <select
+                  [(ngModel)]="formData.Shipping_Mode"
+                  name="mode"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none">
+                  <option value="">Select Mode</option>
+                  <option value="Standard Class">Standard Class</option>
+                  <option value="First Class">First Class</option>
+                  <option value="Second Class">Second Class</option>
+                  <option value="Same Day">Same Day</option>
+                </select>
+              </div>
+  
+              <!-- Delivery Status -->
+              <div>
+                <label class="mb-2 block text-sm font-medium text-slate-700">Delivery Status *</label>
+                <select
+                  [(ngModel)]="formData.Delivery_Status"
+                  name="status"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none">
+                  <option value="">Select Status</option>
+                  <option value="Advance Shipping">Advance Shipping</option>
+                  <option value="Shipping On Time">Shipping On Time</option>
+                  <option value="Late Delivery">Late Delivery</option>
+                  <option value="Shipping Cancelled">Shipping Cancelled</option>
+                </select>
+              </div>
+  
+              <!-- Days -->
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="mb-2 block text-sm font-medium text-slate-700">Real Days</label>
+                  <input
+                    type="number"
+                    [(ngModel)]="formData.Days_for_shipping_real"
+                    name="realDays"
+                    placeholder="0"
+                    min="0"
+                    class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none">
+                </div>
+                <div>
+                  <label class="mb-2 block text-sm font-medium text-slate-700">Scheduled Days</label>
+                  <input
+                    type="number"
+                    [(ngModel)]="formData.Days_for_shipment_scheduled"
+                    name="scheduledDays"
+                    placeholder="0"
+                    min="0"
+                    class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none">
+                </div>
+              </div>
+  
+              <!-- Risk -->
+              <div>
+                <label class="mb-2 block text-sm font-medium text-slate-700">Risk *</label>
+                <select
+                  [(ngModel)]="formData.Late_delivery_risk"
+                  name="risk"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none">
+                  <option value="">Select Risk</option>
+                  <option value="No Risk">No Risk</option>
+                  <option value="High Risk">High Risk</option>
+                </select>
+              </div>
+  
+              @if (errorMessage) {
+                <div class="rounded-lg bg-red-50 p-3 text-sm text-red-600">
+                  {{ errorMessage }}
+                </div>
+              }
+            </form>
+          }
+        </div>
+  
+        <!-- Footer -->
+        <div class="flex justify-end gap-3 border-t border-slate-200 px-6 py-5">
+          <button
+            type="button"
+            (click)="close()"
+            class="rounded-lg border border-slate-300 px-5 py-2 transition hover:bg-slate-100">
+            {{ mode === 'view' ? 'Close' : 'Cancel' }}
+          </button>
+  
+          @if (mode !== 'view') {
+            <button
+              type="button"
+              (click)="save()"
+              [disabled]="isSaving"
+              class="rounded-lg bg-blue-600 px-5 py-2 font-medium text-white transition hover:bg-blue-700 disabled:opacity-50">
+              {{ isSaving ? 'Saving...' : mode === 'add' ? 'Add Shipping' : 'Update Shipping' }}
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  }

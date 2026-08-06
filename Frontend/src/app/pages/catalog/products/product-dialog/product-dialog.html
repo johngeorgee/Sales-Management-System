@@ -1,329 +1,99 @@
-<h2
-  mat-dialog-title
-  class="border-b border-gray-100 mb-0 pb-4 flex items-center justify-between">
-
-  <span class="font-semibold text-gray-900">
-    {{
-      data.mode === 'add'
-        ? 'Add Product'
-        : data.mode === 'edit'
-          ? 'Edit Product'
-          : 'Product Details'
-    }}
-  </span>
-
-  <button
-    mat-icon-button
-    type="button"
-    (click)="close()"
-    class="text-gray-400">
-
-    <mat-icon>close</mat-icon>
-
-  </button>
-
-</h2>
-
-
-<mat-dialog-content class="product-dialog-content">
-
-  <!-- ================= VIEW ================= -->
-
-  @if (data.mode === 'view') {
-
-    <div class="space-y-6">
-
-      <div class="flex justify-center mb-6">
-
-        <div
-          class="w-32 h-32 rounded-lg bg-gray-100
-                 flex items-center justify-center
-                 overflow-hidden border border-gray-200">
-
-          <img
-            [src]="data.product?.Product_Image"
-            [alt]="data.product?.Product_Name"
-            class="w-full h-full object-cover">
-
-        </div>
-
+<!-- product-dialog/product-dialog.html -->
+@if (isOpen) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <div class="w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
+      <!-- Header -->
+      <div class="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+        <h2 class="text-xl font-semibold text-slate-800">
+          @switch (mode) {
+            @case ('add') { Add Product }
+            @case ('edit') { Edit Product }
+            @case ('view') { Product Details }
+          }
+        </h2>
+        <button type="button" (click)="close()" class="rounded-lg p-2 transition hover:bg-slate-100">✕</button>
       </div>
 
+      <!-- Body -->
+      <div class="max-h-[70vh] overflow-y-auto p-6">
+        @if (mode === 'view') {
+          <div class="space-y-6">
+            <div class="flex justify-center">
+              <div class="h-32 w-32 overflow-hidden rounded-lg border border-gray-200 bg-gray-100 flex items-center justify-center">
+                <img [src]="product?.Product_Image" [alt]="product?.Product_Name" class="h-full w-full object-cover">
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div><p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Product Name</p><p class="font-medium text-slate-900">{{ product?.Product_Name }}</p></div>
+              <div><p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Product ID</p><p class="text-slate-900">{{ product?.Product_Card_Id }}</p></div>
+              <div><p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Category</p><p class="text-slate-900">{{ product?.categoryRef?.Category_Name }}</p></div>
+              <div><p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Price</p><p class="font-medium text-slate-900">${{ product?.Product_Price }}</p></div>
+              <div><p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Status</p>
+                <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold"
+                  [ngClass]="product?.Product_Status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'">
+                  {{ product?.Product_Status }}
+                </span>
+              </div>
+            </div>
+          </div>
+        }
 
-      <div class="grid grid-cols-2 gap-4">
-
-        <div>
-          <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">
-            Product Name
-          </p>
-
-          <p class="text-gray-900 font-medium">
-            {{ data.product?.Product_Name }}
-          </p>
-        </div>
-
-
-        <div>
-          <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">
-            Product ID
-          </p>
-
-          <p class="text-gray-900">
-            {{ data.product?.Product_Card_Id }}
-          </p>
-        </div>
-
-
-        <div>
-          <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">
-            Category
-          </p>
-
-          <p class="text-gray-900">
-            {{ data.product?.categoryRef?.Category_Name }}
-          </p>
-        </div>
-
-
-        <div>
-          <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">
-            Price
-          </p>
-
-          <p class="text-gray-900 font-medium">
-            {{ data.product?.Product_Price }}
-          </p>
-        </div>
-
-
-        <div>
-
-          <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">
-            Status
-          </p>
-
-          <span
-            class="inline-flex items-center px-2.5 py-0.5
-                   rounded-full text-xs font-medium"
-            [ngClass]="
-              data.product?.Product_Status === 'Active'
-                ? 'bg-green-100 text-green-800'
-                : 'bg-gray-100 text-gray-800'
-            ">
-
-            {{ data.product?.Product_Status }}
-
-          </span>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  }
-
-
-  <!-- ================= ADD / EDIT ================= -->
-
-  @if (data.mode !== 'view') {
-
-    <form
-      #productForm="ngForm"
-      class="flex flex-col gap-4"
-      (ngSubmit)="save()">
-
-
-      <!-- Image -->
-
-      <div class="flex items-center justify-center mb-2">
-
-        <button
-          type="button"
-          mat-stroked-button
-          class="w-full h-24 border-dashed border-2">
-
-          <mat-icon>upload</mat-icon>
-
-          Upload Product Image
-
-        </button>
-
-      </div>
-
-
-      <!-- Product Card ID -->
-
-      <mat-form-field
-        appearance="outline"
-        class="w-full">
-
-        <mat-label>Product ID</mat-label>
-
-        <input
-          matInput
-          type="number"
-          [(ngModel)]="formData.Product_Card_Id"
-          name="productId"
-          required>
-
-      </mat-form-field>
-
-
-      <!-- Product Name -->
-
-      <mat-form-field
-        appearance="outline"
-        class="w-full">
-
-        <mat-label>Product Name</mat-label>
-
-        <input
-          matInput
-          [(ngModel)]="formData.Product_Name"
-          name="name"
-          required>
-
-      </mat-form-field>
-
-
-      <!-- Category + Price -->
-
-      <div class="flex gap-4">
-
-        <mat-form-field
-          appearance="outline"
-          class="w-1/2">
-
-          <mat-label>Category</mat-label>
-
-          <mat-select
-            [(ngModel)]="formData.categoryRef"
-            name="category"
-            (selectionChange)="onCategoryChange($event.value)"
-            panelClass="product-category-panel"
-            required>
-
-            @for (category of categories; track category._id) {
-
-              <mat-option [value]="category._id">
-
-                {{ category.Category_Name }}
-
-              </mat-option>
-
+        @if (mode !== 'view') {
+          <form class="space-y-4">
+            <div>
+              <label class="mb-2 block text-sm font-medium text-slate-700">Product ID *</label>
+              <input type="number" [(ngModel)]="formData.Product_Card_Id" name="productId"
+                class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none">
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-medium text-slate-700">Product Name *</label>
+              <input type="text" [(ngModel)]="formData.Product_Name" name="name"
+                class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="mb-2 block text-sm font-medium text-slate-700">Category *</label>
+                <select [(ngModel)]="formData.categoryRef" name="category" (change)="onCategoryChange(formData.categoryRef)"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none">
+                  <option value="">Select Category</option>
+                  @for (category of categories; track category._id) {
+                    <option [value]="category._id">{{ category.Category_Name }}</option>
+                  }
+                </select>
+              </div>
+              <div>
+                <label class="mb-2 block text-sm font-medium text-slate-700">Price *</label>
+                <input type="number" [(ngModel)]="formData.Product_Price" name="price" min="0"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none">
+              </div>
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-medium text-slate-700">Status</label>
+              <select [(ngModel)]="formData.Product_Status" name="status"
+                class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:outline-none">
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+            @if (errorMessage) {
+              <div class="rounded-lg bg-red-50 p-3 text-sm text-red-600">{{ errorMessage }}</div>
             }
-
-          </mat-select>
-
-        </mat-form-field>
-
-
-        <mat-form-field
-          appearance="outline"
-          class="w-1/2">
-
-          <mat-label>Price</mat-label>
-
-          <input
-            matInput
-            type="number"
-            [(ngModel)]="formData.Product_Price"
-            name="price"
-            min="0"
-            required>
-
-        </mat-form-field>
-
+          </form>
+        }
       </div>
 
-
-      <!-- Status -->
-
-      <mat-form-field
-        appearance="outline"
-        class="w-full">
-
-        <mat-label>Status</mat-label>
-
-        <mat-select
-          [(ngModel)]="formData.Product_Status"
-          name="status"
-          panelClass="product-category-panel"
-          >
-          
-          <mat-option value="Active">
-            Active
-          </mat-option>
-
-          <mat-option value="Inactive">
-            Inactive
-          </mat-option>
-
-        </mat-select>
-
-      </mat-form-field>
-
-    </form>
-
-  }
-
-</mat-dialog-content>
-
-
-<!-- ================= ACTIONS ================= -->
-
-<mat-dialog-actions
-  align="end"
-  class="product-dialog-content">
-
-
-  @if (data.mode === 'view') {
-
-    <button
-      mat-button
-      type="button"
-      (click)="close()">
-
-      Close
-
-    </button>
-
-
-    <button
-      mat-flat-button
-      color="primary"
-      type="button"
-      (click)="data.mode = 'edit'">
-
-      Edit Product
-
-    </button>
-
-  }
-
-  @else {
-
-    <button
-      mat-button
-      type="button"
-      (click)="close()">
-
-      Cancel
-
-    </button>
-
-
-    <button
-      mat-flat-button
-      color="primary"
-      type="button"
-      (click)="save()">
-
-      {{ data.mode === 'add' ? 'Add Product' : 'Save Changes' }}
-
-    </button>
-
-  }
-
-</mat-dialog-actions>
+      <!-- Footer -->
+      <div class="flex justify-end gap-3 border-t border-slate-200 px-6 py-5">
+        <button type="button" (click)="close()" class="rounded-lg border border-slate-300 px-5 py-2 transition hover:bg-slate-100">
+          {{ mode === 'view' ? 'Close' : 'Cancel' }}
+        </button>
+        @if (mode !== 'view') {
+          <button type="button" (click)="save()" [disabled]="isSaving"
+            class="rounded-lg bg-blue-600 px-5 py-2 font-medium text-white transition hover:bg-blue-700 disabled:opacity-50">
+            {{ isSaving ? 'Saving...' : mode === 'add' ? 'Add Product' : 'Update Product' }}
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+}
