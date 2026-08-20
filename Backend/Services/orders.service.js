@@ -7,7 +7,7 @@ const createOrder = async (orderData) => {
     const order = await orderModel.create(orderData);
     return order;
 };
-const getOrders = async (page = 1, limit = 20) => {
+const getOrders = async (page = 1, limit = 15) => {
 
     const skip = (page - 1) * limit;
 

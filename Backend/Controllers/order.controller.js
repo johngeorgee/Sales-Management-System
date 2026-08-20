@@ -24,7 +24,7 @@ const addOrder = async (req, res) => {
 const getAllOrders = async (req, res) => {
     try {
         const page = Number(req.query.page) || 1;
-        const limit = Number(req.query.limit) || 30;
+        const limit = Number(req.query.limit) || 15;
         const result = await getOrders(page, limit);
         return res.status(200).json({
             message: "Orders fetched successfully",

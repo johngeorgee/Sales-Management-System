@@ -26,7 +26,6 @@ const orderListSchema = new Schema({
     Order_Item_Product_Price : {
         type: Number,
         min: 0,
-        max: 1
     },
     Order_Item_Discount : Number,
     Order_Item_Discount_Rate : Number,

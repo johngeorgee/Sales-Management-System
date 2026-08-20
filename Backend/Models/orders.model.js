@@ -1,4 +1,5 @@
 const mongoose = require("mongoose")
+const { collection } = require("./products.model")
 const { Schema } = mongoose 
 
 const orderSchema = new Schema({
@@ -12,7 +13,7 @@ const orderSchema = new Schema({
     },
     order_date: Number,
     shipping_date: Number,
-    orderStatus : {
+    Order_Status : {
         type: String,
         enum: {
             
@@ -25,7 +26,7 @@ const orderSchema = new Schema({
         region: String,
         city: String
     },
-    market : String,
+    Market : String,
     Type : {
          type: String,
         enum: { 
@@ -33,7 +34,9 @@ const orderSchema = new Schema({
         }
     }
 }, 
-{ timestamps : true})
+{ timestamps : true,
+    collection: "orders"
+})
 const orderModel = mongoose.model("orders", orderSchema)
 module.exports = { orderModel }
 
