@@ -1,0 +1,887 @@
+@if (isOpen) {
+
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      (click)="close()">
+  
+  ```
+  <div
+    class="flex max-h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+    (click)="$event.stopPropagation()">
+  
+    <!-- ==================== HEADER ==================== -->
+    <div class="flex shrink-0 items-center justify-between border-b border-slate-200 bg-white px-6 py-5">
+  
+      <div>
+        <h2 class="text-xl font-semibold text-slate-800">
+          @switch (mode) {
+            @case ('add') {
+              Add New Supplier
+            }
+  
+            @case ('edit') {
+              Edit Supplier
+            }
+  
+            @case ('view') {
+              Supplier Details
+            }
+          }
+        </h2>
+  
+        @if (mode === 'view' && supplier) {
+          <p class="mt-1 text-sm text-slate-500">
+            View supplier information and supplied products
+          </p>
+        }
+      </div>
+  
+      <button
+        type="button"
+        (click)="close()"
+        class="flex h-9 w-9 items-center justify-center rounded-lg text-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-700">
+        &times;
+      </button>
+  
+    </div>
+  
+    <!-- ==================== CONTENT ==================== -->
+    <div class="flex-1 overflow-y-auto">
+  
+      <!-- ================================================== -->
+      <!-- VIEW MODE                                         -->
+      <!-- ================================================== -->
+  
+      @if (mode === 'view' && supplier) {
+  
+        <div class="space-y-6 p-6">
+  
+          <!-- ==================== SUPPLIER HEADER ==================== -->
+  
+          <div class="flex flex-col gap-4 rounded-xl border border-slate-200 bg-slate-50 p-5 sm:flex-row sm:items-center">
+
+  
+            <div class="min-w-0 flex-1">
+  
+              <div class="flex flex-wrap items-center gap-3">
+  
+                <h3 class="text-xl font-bold text-slate-900">
+                  {{ supplier.Supplier_Company_Name }}
+                </h3>
+  
+                <span
+                  class="inline-flex rounded-full px-3 py-1 text-xs font-semibold"
+                  [class]="{
+                    'bg-green-100 text-green-700': supplier.Status === 'Active',
+                    'bg-red-100 text-red-700': supplier.Status === 'Inactive'
+                  }">
+                  {{ supplier.Status }}
+                </span>
+  
+              </div>
+  
+              <p class="mt-1 text-sm text-slate-500">
+                Business ID:
+                <span class="font-medium text-slate-700">
+                  {{ supplier.Business_Id }}
+                </span>
+              </p>
+  
+            </div>
+  
+          </div>
+  
+  
+          <!-- ==================== CONTACT + ADDRESS ==================== -->
+  
+          <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+  
+            <!-- Contact Information -->
+            <div class="rounded-xl border border-slate-200 bg-white">
+  
+              <div class="border-b border-slate-200 px-5 py-4">
+                <h4 class="font-semibold text-slate-800">
+                  Contact Information
+                </h4>
+              </div>
+  
+              <div class="space-y-4 p-5">
+  
+                <div>
+                  <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                    Contact Person
+                  </p>
+  
+                  <p class="mt-1 text-sm font-medium text-slate-800">
+                    {{ supplier.Contact_Info.Contact_Person || '-' }}
+                  </p>
+                </div>
+  
+                <div>
+                  <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                    Email
+                  </p>
+  
+                  <p class="mt-1 break-all text-sm text-slate-700">
+                    {{ supplier.Contact_Info.Email || '-' }}
+                  </p>
+                </div>
+  
+                <div>
+                  <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                    Phone
+                  </p>
+  
+                  <p class="mt-1 text-sm text-slate-700">
+                    {{ supplier.Contact_Info.Phone_Number || '-' }}
+                  </p>
+                </div>
+  
+              </div>
+  
+            </div>
+  
+  
+            <!-- Address -->
+            <div class="rounded-xl border border-slate-200 bg-white">
+  
+              <div class="border-b border-slate-200 px-5 py-4">
+                <h4 class="font-semibold text-slate-800">
+                  Address
+                </h4>
+              </div>
+  
+              <div class="space-y-4 p-5">
+  
+                <div>
+                  <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                    Street
+                  </p>
+  
+                  <p class="mt-1 text-sm text-slate-700">
+                    {{ supplier.Address.Street || '-' }}
+                  </p>
+                </div>
+  
+                <div class="grid grid-cols-2 gap-4">
+  
+                  <div>
+                    <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                      City
+                    </p>
+  
+                    <p class="mt-1 text-sm text-slate-700">
+                      {{ supplier.Address.City || '-' }}
+                    </p>
+                  </div>
+  
+                  <div>
+                    <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                      State
+                    </p>
+  
+                    <p class="mt-1 text-sm text-slate-700">
+                      {{ supplier.Address.State || '-' }}
+                    </p>
+                  </div>
+  
+                </div>
+  
+                <div class="grid grid-cols-2 gap-4">
+  
+                  <div>
+                    <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                      Country
+                    </p>
+  
+                    <p class="mt-1 text-sm text-slate-700">
+                      {{ supplier.Address.Country || '-' }}
+                    </p>
+                  </div>
+  
+                  <div>
+                    <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                      Zip Code
+                    </p>
+  
+                    <p class="mt-1 text-sm text-slate-700">
+                      {{ supplier.Address.ZipCode || '-' }}
+                    </p>
+                  </div>
+  
+                </div>
+  
+              </div>
+  
+            </div>
+  
+          </div>
+  
+  
+          <!-- ==================== BUSINESS TERMS ==================== -->
+  
+          <div class="rounded-xl border border-slate-200 bg-white">
+  
+            <div class="border-b border-slate-200 px-5 py-4">
+              <h4 class="font-semibold text-slate-800">
+                Business Terms
+              </h4>
+            </div>
+  
+            <div class="grid grid-cols-1 gap-5 p-5 sm:grid-cols-2">
+  
+              <div>
+                <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                  Payment Terms
+                </p>
+  
+                <span class="mt-2 inline-flex rounded-full bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-700">
+                  {{ supplier.Payment_Terms || '-' }}
+                </span>
+              </div>
+  
+              <div>
+                <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                  Supplier Status
+                </p>
+  
+                <span
+                  class="mt-2 inline-flex rounded-full px-3 py-1.5 text-sm font-medium"
+                  [class]="{
+                    'bg-green-100 text-green-700': supplier.Status === 'Active',
+                    'bg-red-100 text-red-700': supplier.Status === 'Inactive'
+                  }">
+                  {{ supplier.Status }}
+                </span>
+              </div>
+  
+              @if (supplier.Notes) {
+  
+                <div class="sm:col-span-2">
+  
+                  <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                    Notes
+                  </p>
+  
+                  <p class="mt-2 rounded-lg bg-slate-50 p-4 text-sm leading-6 text-slate-700">
+                    {{ supplier.Notes }}
+                  </p>
+  
+                </div>
+  
+              }
+  
+            </div>
+  
+          </div>
+  
+  
+          <!-- ==================== PRODUCTS ==================== -->
+  
+          <div class="rounded-xl border border-slate-200 bg-white">
+  
+            <!-- Products Header -->
+            <div class="flex flex-col gap-2 border-b border-slate-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+  
+              <div>
+                <h4 class="font-semibold text-slate-800">
+                  Supplied Products
+                </h4>
+  
+                <p class="mt-1 text-xs text-slate-500">
+                  Products currently linked to this supplier
+                </p>
+              </div>
+  
+              <span class="inline-flex w-fit rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
+                {{ products.length || 0 }}
+                {{ (products.length || 0) === 1 ? 'Product' : 'Products' }}
+              </span>
+  
+            </div>
+  
+  
+            <!-- Products Exist -->
+            @if (products && products.length > 0) {
+  
+              <div class="overflow-x-auto">
+  
+                <table class="min-w-full divide-y divide-slate-200">
+  
+                  <thead class="bg-slate-50">
+  
+                    <tr>
+  
+                      <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        Product
+                      </th>
+  
+                      <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        Product ID
+                      </th>
+  
+                      <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        Price
+                      </th>
+  
+                      <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        Status
+                      </th>
+  
+                    </tr>
+  
+                  </thead>
+  
+                  <tbody class="divide-y divide-slate-100 bg-white">
+  
+                    @for (product of products; track product._id) {
+  
+                      <tr class="transition hover:bg-slate-50">
+  
+                        <!-- Product -->
+                        <td class="whitespace-nowrap px-5 py-4">
+  
+                          <div class="flex items-center gap-3">
+  
+
+  
+                              <div
+                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-sm font-semibold text-slate-500">
+                                {{ product.Product_Name.charAt(0) || '?' }}
+                              </div>
+  
+                            
+  
+                            <div class="min-w-0">
+  
+                              <p class="truncate text-sm font-medium text-slate-800">
+                                {{ product.Product_Name }}
+                              </p>
+  
+                            </div>
+  
+                          </div>
+  
+                        </td>
+  
+  
+                        <!-- Product ID -->
+                        <td class="whitespace-nowrap px-5 py-4 text-sm text-slate-600">
+                          {{ product.Product_Card_Id }}
+                        </td>
+  
+  
+                        <!-- Price -->
+                        <td class="whitespace-nowrap px-5 py-4 text-sm font-medium text-slate-700">
+                          {{ product.Product_Price }}
+                        </td>
+  
+  
+                        <!-- Status -->
+                        <td class="whitespace-nowrap px-5 py-4">
+  
+                          <span
+                            class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold"
+                            [class]="{
+                              'bg-green-100 text-green-700': product.Product_Status === 'Active',
+                              'bg-red-100 text-red-700': product.Product_Status !== 'Active'
+                            }">
+                            {{ product.Product_Status }}
+                          </span>
+  
+                        </td>
+  
+                      </tr>
+  
+                    }
+  
+                  </tbody>
+  
+                </table>
+  
+              </div>
+  
+            } @else {
+  
+              <!-- No Products -->
+              <div class="flex flex-col items-center justify-center px-6 py-12 text-center">
+  
+                <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-2xl">
+                  📦
+                </div>
+  
+                <h5 class="text-sm font-semibold text-slate-700">
+                  No Products Assigned
+                </h5>
+  
+                <p class="mt-1 max-w-sm text-xs leading-5 text-slate-500">
+                  This supplier currently has no products linked to it.
+                </p>
+  
+              </div>
+  
+            }
+  
+          </div>
+  
+        </div>
+  
+      }
+  
+      @if (mode === 'add' || mode === 'edit') {
+  
+        <form
+             #supplierForm="ngForm"
+          class="space-y-6 p-6">
+  
+          <!-- ==================== COMPANY INFORMATION ==================== -->
+  
+          <div class="rounded-xl border border-slate-200 bg-white">
+  
+            <div class="border-b border-slate-200 px-5 py-4">
+              <h4 class="font-semibold text-slate-800">
+                Company Information
+              </h4>
+            </div>
+  
+            <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-2">
+  
+              <!-- Company Name -->
+              <div>
+  
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">
+                  Company Name
+                  <span class="text-red-500">*</span>
+                </label>
+  
+                <input
+                  type="text"
+                  [(ngModel)]="formData.Supplier_Company_Name"
+                  name="companyName"
+                  required
+                  #companyName="ngModel"
+                  placeholder="Enter company name"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                  [class.border-red-500]="companyName.invalid && companyName.touched">
+  
+                @if (companyName.invalid && companyName.touched) {
+                  <p class="mt-1 text-xs text-red-500">
+                    Company name is required.
+                  </p>
+                }
+  
+              </div>
+  
+  
+              <!-- Business ID -->
+              <div>
+  
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">
+                  Business ID
+                  <span class="text-red-500">*</span>
+                </label>
+  
+                <input
+                  type="number"
+                  [(ngModel)]="formData.Business_Id"
+                  #businessId="ngModel"
+                  name="businessId"
+                  required
+                  placeholder="Enter business ID"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                  [class.border-red-500]="businessId.invalid && businessId.touched">
+  
+                @if (businessId.invalid && businessId.touched) {
+                  <p class="mt-1 text-xs text-red-500">
+                    Business ID is required.
+                  </p>
+                }
+  
+              </div>
+  
+            </div>
+  
+          </div>
+  
+  
+          <!-- ==================== CONTACT INFORMATION ==================== -->
+  
+          <div class="rounded-xl border border-slate-200 bg-white">
+  
+            <div class="border-b border-slate-200 px-5 py-4">
+              <h4 class="font-semibold text-slate-800">
+                Contact Information
+              </h4>
+            </div>
+  
+            <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-3">
+  
+              <!-- Contact Person -->
+              <div>
+  
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">
+                  Contact Person
+                  <span class="text-red-500">*</span>
+                </label>
+  
+                <input
+                  type="text"
+                  [(ngModel)]="formData.Contact_Info.Contact_Person"
+                  #contactPerson="ngModel"
+                  name="contactPerson"
+                  required
+                  placeholder="Full name"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                  [class.border-red-500]="contactPerson.invalid && contactPerson.touched">
+  
+                @if (contactPerson.invalid && contactPerson.touched) {
+                  <p class="mt-1 text-xs text-red-500">
+                    Contact person is required.
+                  </p>
+                }
+  
+              </div>
+  
+  
+              <!-- Email -->
+              <div>
+  
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">
+                  Email
+                  <span class="text-red-500">*</span>
+                </label>
+  
+                <input
+                  type="email"
+                  [(ngModel)]="formData.Contact_Info.Email"
+                  #Email="ngModel"
+                  name="email"
+                  required
+                  email
+                  
+                  placeholder="email@company.com"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                  [class.border-red-500]="Email.invalid && Email.touched">
+  
+                @if (Email.invalid && Email.touched) {
+                  <p class="mt-1 text-xs text-red-500">
+                    Please enter a valid email.
+                  </p>
+                }
+  
+              </div>
+  
+  
+              <!-- Phone -->
+              <div>
+  
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">
+                  Phone Number
+                  <span class="text-red-500">*</span>
+                </label>
+  
+                <input
+                  type="tel"
+                  [(ngModel)]="formData.Contact_Info.Phone_Number"
+                  #phone="ngModel"
+                  name="phone"
+                  required
+                  
+                  placeholder="+20 100 000 0000"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                  [class.border-red-500]="phone.invalid && phone.touched">
+  
+                @if (phone.invalid && phone.touched) {
+                  <p class="mt-1 text-xs text-red-500">
+                    Phone number is required.
+                  </p>
+                }
+  
+              </div>
+  
+            </div>
+  
+          </div>
+  
+  
+          <!-- ==================== ADDRESS ==================== -->
+  
+          <div class="rounded-xl border border-slate-200 bg-white">
+  
+            <div class="border-b border-slate-200 px-5 py-4">
+              <h4 class="font-semibold text-slate-800">
+                Address
+              </h4>
+            </div>
+  
+            <div class="space-y-5 p-5">
+  
+              <!-- Street -->
+              <div>
+  
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">
+                  Street
+                </label>
+  
+                <input
+                  type="text"
+                  [(ngModel)]="formData.Address.Street"
+                  #addressStreet="ngModel"
+                  name="street"
+                  placeholder="Street address"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
+  
+              </div>
+  
+  
+              <!-- City / State / Country -->
+              <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
+  
+                <div>
+  
+                  <label class="mb-1.5 block text-sm font-medium text-slate-700">
+                    City
+                  </label>
+  
+                  <input
+                    type="text"
+                    [(ngModel)]="formData.Address.City"
+                    name="city"
+                    placeholder="City"
+                    class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
+  
+                </div>
+  
+  
+                <div>
+  
+                  <label class="mb-1.5 block text-sm font-medium text-slate-700">
+                    State
+                  </label>
+  
+                  <input
+                    type="text"
+                    [(ngModel)]="formData.Address.State"
+                    name="state"
+                    placeholder="State / Governorate"
+                    class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
+  
+                </div>
+  
+  
+                <div>
+  
+                  <label class="mb-1.5 block text-sm font-medium text-slate-700">
+                    Country
+                  </label>
+  
+                  <input
+                    type="text"
+                    [(ngModel)]="formData.Address.Country"
+                    name="country"
+                    placeholder="Country"
+                    class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
+  
+                </div>
+  
+              </div>
+  
+  
+              <!-- Zip Code -->
+              <div class="max-w-sm">
+  
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">
+                  Zip Code
+                </label>
+  
+                <input
+                  type="text"
+                  [(ngModel)]="formData.Address.ZipCode"
+                  name="zipCode"
+                  placeholder="Postal code"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
+  
+              </div>
+  
+            </div>
+  
+          </div>
+  
+  
+          <!-- ==================== BUSINESS TERMS ==================== -->
+  
+          <div class="rounded-xl border border-slate-200 bg-white">
+  
+            <div class="border-b border-slate-200 px-5 py-4">
+              <h4 class="font-semibold text-slate-800">
+                Business Terms
+              </h4>
+            </div>
+  
+            <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-2">
+  
+              <!-- Payment Terms -->
+              <div>
+  
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">
+                  Payment Terms
+                  <span class="text-red-500">*</span>
+                </label>
+  
+                <select
+                  [(ngModel)]="formData.Payment_Terms"
+                  name="paymentTerms"
+                  #paymentTerms="ngModel"
+                  required
+                 
+                  class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                  [class.border-red-500]="paymentTerms.invalid && paymentTerms.touched">
+  
+                  <option value="" disabled>
+                    Select payment terms
+                  </option>
+  
+                  <option value="Cash">
+                    Cash
+                  </option>
+  
+                  <option value="Net 15">
+                    Net 15
+                  </option>
+  
+                  <option value="Net 30">
+                    Net 30
+                  </option>
+  
+                  <option value="Net 60">
+                    Net 60
+                  </option>
+  
+                </select>
+  
+                @if (paymentTerms.invalid && paymentTerms.touched) {
+                  <p class="mt-1 text-xs text-red-500">
+                    Payment terms are required.
+                  </p>
+                }
+  
+              </div>
+  
+  
+              <!-- Status -->
+              <div>
+  
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">
+                  Status
+                  <span class="text-red-500">*</span>
+                </label>
+  
+                <select
+                  [(ngModel)]="formData.Status"
+                  #status="ngModel"
+                  name="status"
+                  required
+                  
+                  class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                  [class.border-red-500]="status.invalid && status.touched">
+  
+                  <option value="" disabled>
+                    Select status
+                  </option>
+  
+                  <option value="Active">
+                    Active
+                  </option>
+  
+                  <option value="Inactive">
+                    Inactive
+                  </option>
+  
+                </select>
+  
+                @if (status.invalid && status.touched) {
+                  <p class="mt-1 text-xs text-red-500">
+                    Status is required.
+                  </p>
+                }
+  
+              </div>
+  
+  
+              <!-- Notes -->
+              <div class="md:col-span-2">
+  
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">
+                  Notes
+                </label>
+  
+                <textarea
+                  [(ngModel)]="formData.Notes"
+                  name="notes"
+                  rows="4"
+                  placeholder="Additional notes about this supplier..."
+                  class="w-full resize-none rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
+                </textarea>
+  
+              </div>
+  
+            </div>
+  
+          </div>
+  
+  
+          <!-- ==================== FORM ACTIONS ==================== -->
+  
+          <div class="flex flex-col-reverse gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end">
+  
+            <button
+              type="button"
+              (click)="close()"
+              class="rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+              Cancel
+            </button>
+  
+            <button
+              type="button"
+              (click)="save()"
+              [disabled]="supplierForm.invalid || isSaving"
+              class="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50">
+  
+              @if (mode === 'add') {
+                Add Supplier
+              } @else {
+                Save Changes
+              }
+  
+            </button>
+  
+          </div>
+  
+        </form>
+  
+      }
+  
+    </div>
+  
+    <!-- ==================== VIEW FOOTER ==================== -->
+  
+    @if (mode === 'view') {
+  
+      <div class="flex shrink-0 justify-end border-t border-slate-200 bg-slate-50 px-6 py-4">
+  
+        <button
+          type="button"
+          (click)="close()"
+          class="rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+          Close
+        </button>
+  
+      </div>
+  
+    }
+  
+  </div>
+  
+    </div>
+  }
+  

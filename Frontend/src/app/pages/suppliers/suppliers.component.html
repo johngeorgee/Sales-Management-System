@@ -1,0 +1,206 @@
+<!-- suppliers.html -->
+<div class="mx-auto max-w-7xl space-y-6 px-4 py-6">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h1 class="text-3xl font-bold text-slate-800">Suppliers</h1>
+        <p class="mt-1 text-sm text-slate-500">Manage suppliers, contact information, payment terms, and supplier status.</p>
+      </div>
+      <button
+        (click)="openDialog('add')"
+        class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-medium text-white transition hover:bg-blue-700">
+
+        + Add Supplier
+      </button>
+    </div>
+  
+    <!-- Filters -->
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <!-- Search -->
+        <div class="relative">
+          <input
+            type="text"
+            placeholder="Search suppliers..."
+            [(ngModel)]="searchQuery"
+            (input)="filterData()"
+            class="w-full rounded-xl border border-slate-300 px-4 py-2 pr-10 outline-none transition focus:border-blue-500">
+          @if (searchQuery) {
+            <button
+            
+            (click)="searchQuery = ''; filterData()"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+            ✕
+          </button>
+          }
+
+        </div>
+  
+        <!-- Status Filter -->
+        <select
+          [(ngModel)]="selectedStatus"
+          (change)="filterData()"
+          class="rounded-xl border border-slate-300 px-4 py-2 outline-none focus:border-blue-500">
+          <option value="ِAll Status">All Status</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+  
+        <!-- Payment Terms Filter -->
+        <select
+          [(ngModel)]="selectedPaymentTerms"
+          (change)="filterData()"
+          class="rounded-xl border border-slate-300 px-4 py-2 outline-none focus:border-blue-500">
+          <option value="">All Payment Terms</option>
+          <option value="Cash">Cash</option>
+          <option value="Net 15">Net 15</option>
+          <option value="Net 30">Net 30</option>
+          <option value="Net 60">Net 60</option>
+        </select>
+  
+        <!-- Clear Filters -->
+        <button
+          (click)="clearFilters()"
+          class="rounded-xl border border-slate-300 px-4 py-2 transition hover:bg-slate-100">
+          Clear Filters
+        </button>
+      </div>
+    </div>
+  
+    <!-- Table -->
+    <div class="overflow-hidden rounded-1xl border border-slate-200 bg-white shadow-sm">
+      <div class="overflow-x-auto">
+        <table class="min-w-full">
+          <thead class="bg-slate-50">
+            <tr>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">Supplier</th>
+
+              <th class="px-6 py-4 text-left whitespace-nowrap text-sm font-semibold text-slate-600">Products No.</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">Contact</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">Location</th>
+              <th class="px-6 py-4 text-center text-sm whitespace-nowrap font-semibold text-slate-600">Payment Terms</th>
+              <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">Status</th>
+              <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if(loading) {
+              <tr>
+                <td colspan="7" class="py-20 text-center text-slate-500">Loading suppliers...</td>
+              </tr>
+            } @else {
+              @if(filteredSuppliers.length === 0) {
+                <tr>
+                  <td colspan="7" class="py-20 text-center">
+                    <div class="flex flex-col items-center gap-3">
+                      <span class="text-4xl">🏢</span>
+                      <p class="text-slate-500">No suppliers found</p>
+                      <p class="text-sm text-slate-400">Try adjusting your search or filters, or add a new supplier.</p>
+                      <button
+                        (click)="openDialog('add')"
+                        class="mt-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700">
+                        Add Supplier
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              } @else {
+                @for(supplier of filteredSuppliers; track supplier._id) {
+                  <tr class="border-t transition hover:bg-slate-50">
+                    <!-- Supplier Column -->
+                    <td class="px-6 py-4">
+                      <div class="flex items-center gap-3">
+
+                        <div>
+                          <div class="font-medium text-slate-900 whitespace-nowrap">{{ supplier.Supplier_Company_Name }}</div>
+                          <div class="text-xs text-slate-400">Supplier #{{ supplier.Business_Id }}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 font-mono text-md text-slate-600">
+                        {{ supplier.productsCount }}
+                    </td>
+  
+                    <!-- Contact Column -->
+                    <td class="px-6 py-4">
+                      <div class="space-y-0.5">
+                        <div class="text-sm font-medium text-slate-800">
+                          {{ supplier.Contact_Info.Contact_Person || '-' }}
+                        </div>
+                        <div class="text-xs text-slate-500">
+                          {{ supplier.Contact_Info.Email || '-' }}
+                        </div>
+                        <div class="text-xs text-slate-500">
+                          {{ supplier.Contact_Info.Phone_Number || '-' }}
+                        </div>
+                      </div>
+                    </td>
+  
+                    <!-- Location Column -->
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                      {{ getLocationDisplay(supplier.Address) }}
+                    </td>
+  
+                    <!-- Payment Terms -->
+                    <td class="px-6 py-4 text-center">
+                      <span class="inline-flex rounded-full whitespace-nowrap bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
+                        {{ supplier.Payment_Terms || '-' }}
+                      </span>
+                    </td>
+  
+                    <!-- Status -->
+                    <td class="px-6 py-4 text-center">
+                      <span
+                        class="inline-flex rounded-full px-3 py-1 text-xs font-semibold"
+                        [ngClass]="getStatusClass(supplier.Status)">
+                        {{ supplier.Status || 'Inactive' }}
+                      </span>
+                    </td>
+  
+                    <!-- Actions -->
+                    <td class="px-6 py-4">
+                      <div class="flex justify-center gap-2">
+                        <button
+                          (click)="openDialog('view', supplier)"
+                          class="rounded-lg bg-slate-100 px-3 py-1 text-sm hover:bg-slate-200">
+                          View
+                        </button>
+                        <button
+                          (click)="openDialog('edit', supplier)"
+                          class="rounded-lg bg-blue-100 px-3 py-1 text-sm text-blue-700 hover:bg-blue-200">
+                          Edit
+                        </button>
+                        <button
+                          (click)="deleteSupplier(supplier._id)"
+                          class="rounded-lg bg-red-100 px-3 py-1 text-sm text-red-700 hover:bg-red-200">
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+  
+      <!-- Total Count -->
+      <div class="flex items-center justify-between border-t px-6 py-4">
+        <p class="text-sm text-slate-500">
+          Total Suppliers :
+          <span class="font-semibold">{{ filteredSuppliers.length }}</span>
+        </p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Supplier Dialog -->
+  <app-supplier-dialog
+    [isOpen]="isDialogOpen"
+    [mode]="dialogMode"
+    [supplier]="selectedSupplier"
+    [products]="selectedProducts"
+    (closed)="closeDialog()"
+    (saved)="saveSupplier($event)">
+  </app-supplier-dialog>
