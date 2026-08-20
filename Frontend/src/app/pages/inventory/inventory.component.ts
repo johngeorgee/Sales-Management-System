@@ -1,87 +1,141 @@
-// inventory.component.ts
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-export interface Product {
-  id: string;
-  name: string;
-  category: string;
-  stock: number;
-  reorderLevel: number;
-  status: 'In Stock' | 'Low Stock' | 'Out of Stock';
-  lastUpdated: string;
-}
+import { IProduct } from '../../core/Models/product.model';
+import { ProductService } from '../../core/services/product-service';
+import { ExportService } from '../../core/services/export-service';
+import { InventoryDialogComponent } from './inventory-dialog/inventory-dialog';
 
 @Component({
   selector: 'app-inventory',
   standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './inventory.component.html'
+  imports: [
+    CommonModule,
+    FormsModule,
+    InventoryDialogComponent
+  ],
+  templateUrl: './inventory.component.html',
+  styleUrl: './inventory.component.css'
 })
-export class InventoryComponent {
-  // Mock data
-  products: Product[] = [
-    { id: 'P-001', name: 'Widget A', category: 'Widgets', stock: 120, reorderLevel: 30, status: 'In Stock', lastUpdated: '2024-07-12' },
-    { id: 'P-002', name: 'Gadget B', category: 'Gadgets', stock: 8, reorderLevel: 20, status: 'Low Stock', lastUpdated: '2024-07-10' },
-    { id: 'P-003', name: 'Doohickey C', category: 'Doohickeys', stock: 0, reorderLevel: 10, status: 'Out of Stock', lastUpdated: '2024-07-08' },
-    { id: 'P-004', name: 'Widget D', category: 'Widgets', stock: 45, reorderLevel: 15, status: 'In Stock', lastUpdated: '2024-07-11' },
-    { id: 'P-005', name: 'Gadget E', category: 'Gadgets', stock: 5, reorderLevel: 10, status: 'Low Stock', lastUpdated: '2024-07-09' },
-    { id: 'P-006', name: 'Doohickey F', category: 'Doohickeys', stock: 0, reorderLevel: 5, status: 'Out of Stock', lastUpdated: '2024-07-07' },
-    { id: 'P-007', name: 'Widget G', category: 'Widgets', stock: 200, reorderLevel: 50, status: 'In Stock', lastUpdated: '2024-07-13' },
-    { id: 'P-008', name: 'Gadget H', category: 'Gadgets', stock: 12, reorderLevel: 25, status: 'Low Stock', lastUpdated: '2024-07-10' },
-    { id: 'P-009', name: 'Doohickey I', category: 'Doohickeys', stock: 75, reorderLevel: 20, status: 'In Stock', lastUpdated: '2024-07-12' },
-    { id: 'P-010', name: 'Widget J', category: 'Widgets', stock: 0, reorderLevel: 15, status: 'Out of Stock', lastUpdated: '2024-07-06' }
-  ];
+export class InventoryComponent implements OnInit {
 
-  filteredProducts: Product[] = [];
+  products: IProduct[] = [];
+  filteredProducts: IProduct[] = [];
 
-  // Filters
-  searchTerm: string = '';
-  selectedCategory: string = '';
-  selectedStatus: string = '';
+  searchTerm = '';
+  selectedCategory = '';
+  selectedStatus = '';
 
-  // Get unique categories
-  get categories(): string[] {
-    return [...new Set(this.products.map(p => p.category))];
+  loading = false;
+  errorMessage = '';
+
+  // Dialog
+  isDialogOpen = false;
+  dialogMode: 'view' | 'adjust' = 'view';
+  selectedProduct: IProduct | null = null;
+
+  constructor(
+    private readonly productService: ProductService,
+    private readonly exportService: ExportService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadProducts();
   }
 
-  constructor() {
-    this.filteredProducts = [...this.products];
+  loadProducts(): void {
+    this.loading = true;
+    this.errorMessage = '';
+
+    this.productService.getProducts().subscribe({
+      next: (response) => {
+        this.products = response.data;
+        this.applyFilters();
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading inventory products:', error);
+        this.errorMessage = 'Failed to load inventory products';
+        this.loading = false;
+      }
+    });
   }
 
-  // KPI calculations
+  
+  // KPI
+  
+
   get totalProducts(): number {
     return this.products.length;
   }
 
   get inStock(): number {
-    return this.products.filter(p => p.status === 'In Stock').length;
+    return this.products.filter(
+      product => this.getStockStatus(product) === 'In Stock'
+    ).length;
   }
 
   get lowStock(): number {
-    return this.products.filter(p => p.status === 'Low Stock').length;
+    return this.products.filter(
+      product => this.getStockStatus(product) === 'Low Stock'
+    ).length;
   }
 
   get outOfStock(): number {
-    return this.products.filter(p => p.status === 'Out of Stock').length;
+    return this.products.filter(
+      product => this.getStockStatus(product) === 'Out of Stock'
+    ).length;
   }
 
-  // Filter methods
+  
+  // Categories
+  
+
+  get categories(): string[] {
+    return [
+      ...new Set(
+        this.products
+          .map(product => product.categoryRef?.Category_Name)
+          .filter((category): category is string => !!category)
+      )
+    ];
+  }
+
+  
+  // Stock Status
+  
+
+  getStockStatus(product: IProduct): string {
+    if (product.Product_Stock === 0) {
+      return 'Out of Stock';
+    }
+    if (product.Product_Stock <= product.Product_Reorder_Level) {
+      return 'Low Stock';
+    }
+    return 'In Stock';
+  }
+
+  
+  // Filters
+  
+
   applyFilters(): void {
-    this.filteredProducts = this.products.filter(p => {
-      const matchesSearch = this.searchTerm
-        ? p.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-          p.id.toLowerCase().includes(this.searchTerm.toLowerCase())
-        : true;
+    const search = this.searchTerm.trim().toLowerCase();
 
-      const matchesCategory = this.selectedCategory
-        ? p.category === this.selectedCategory
-        : true;
+    this.filteredProducts = this.products.filter(product => {
+      const matchesSearch =
+        !search ||
+        product.Product_Name.toLowerCase().includes(search) ||
+        product.Product_Card_Id.toString().includes(search);
 
-      const matchesStatus = this.selectedStatus
-        ? p.status === this.selectedStatus
-        : true;
+      const matchesCategory =
+        !this.selectedCategory ||
+        product.categoryRef?.Category_Name === this.selectedCategory;
+
+      const matchesStatus =
+        !this.selectedStatus ||
+        this.getStockStatus(product) === this.selectedStatus;
 
       return matchesSearch && matchesCategory && matchesStatus;
     });
@@ -91,19 +145,70 @@ export class InventoryComponent {
     this.searchTerm = '';
     this.selectedCategory = '';
     this.selectedStatus = '';
-    this.filteredProducts = [...this.products];
+    this.applyFilters();
   }
 
-  // Action methods
+  
+  // Dialog Methods
+  
+
+  openDialog(mode: 'view' | 'adjust', product: IProduct): void {
+    this.dialogMode = mode;
+    this.selectedProduct = product;
+    this.isDialogOpen = true;
+  }
+
+  closeDialog(): void {
+    this.isDialogOpen = false;
+    this.selectedProduct = null;
+  }
+
+  saveProduct(product: IProduct): void {
+    // Update the product
+    this.productService.updateProduct(product._id, product).subscribe({
+      next: () => {
+        this.loadProducts();
+        this.closeDialog();
+      },
+      error: (error) => {
+        console.error('Error updating product:', error);
+        this.errorMessage = 'Failed to update product';
+      }
+    });
+  }
+
+  
+  // Actions
+  
+
+  viewProduct(product: IProduct): void {
+    this.openDialog('view', product);
+  }
+
+  adjustStock(product: IProduct): void {
+    this.openDialog('adjust', product);
+  }
+
   openStockAdjustment(): void {
-    console.log('Open Stock Adjustment');
+    // Open adjustment dialog for first product or show selection
+    if (this.products.length > 0) {
+      this.adjustStock(this.products[0]);
+    }
   }
 
-  viewProduct(product: Product): void {
-    console.log('View product:', product);
+  
+  // Export Methods
+  
+
+  exportCSV(): void {
+    this.exportService.exportToCSV(this.filteredProducts, 'inventory-report');
   }
 
-  adjustStock(product: Product): void {
-    console.log('Adjust stock for:', product);
+  exportPDF(): void {
+    this.exportService.exportToPDF(this.filteredProducts, 'Inventory Report');
+  }
+
+  printReport(): void {
+    this.exportService.printReport(this.filteredProducts, 'Inventory Report');
   }
 }

@@ -1,184 +1,515 @@
-<!-- inventory.html -->
 <div class="mx-auto max-w-7xl space-y-6 p-4">
-  <!-- Header -->
+
+  <!--  Header  -->
   <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
       <h1 class="text-3xl font-bold text-slate-800">Inventory</h1>
       <p class="mt-1 text-sm text-slate-500">Manage product stock levels and adjust inventory.</p>
     </div>
-    <button
-      (click)="openStockAdjustment()"
-      class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-medium text-white transition hover:bg-blue-700">
-      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-      </svg>
-      Stock Adjustment
-    </button>
+
+    <div class="flex flex-wrap items-center gap-3">
+      <!-- Export CSV -->
+      <button
+        type="button"
+        (click)="exportCSV()"
+        class="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+        <span>📄</span>
+        Export CSV
+      </button>
+
+      <!-- Export PDF -->
+      <button
+        type="button"
+        (click)="exportPDF()"
+        class="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+        <span>📑</span>
+        Export PDF
+      </button>
+
+      <!-- Print -->
+      <button
+        type="button"
+        (click)="printReport()"
+        class="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+        <span>🖨️</span>
+        Print
+      </button>
+    </div>
   </div>
 
-  <!-- KPI Cards -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+  <!--  KPI Cards  -->
+
+  <div
+    class="grid
+           grid-cols-1
+           gap-6
+           sm:grid-cols-2
+           lg:grid-cols-4"
+  >
+
     <!-- Total Products -->
-    <div class="rounded-xl bg-gradient-to-r from-green-100 to-green-200 p-6 shadow-sm">
+
+    <div
+      class="rounded-xl
+             bg-gradient-to-r
+             from-green-100
+             to-green-200
+             p-6
+             shadow-sm"
+    >
+
       <div class="flex items-center justify-between">
-        <div>
-          <p class="text-xs font-medium text-green-800">Total Products</p>
-          <p class="text-2xl font-bold text-green-900">{{ totalProducts }}</p>
-        </div>
-        <span class="text-3xl">📦</span>
+        <p class="text-xl font-medium text-green-800">
+          Total Products
+        </p>
+        <p class="text-2xl font-bold text-green-900">
+          {{ filteredProducts.length }}
+        </p>
       </div>
+
     </div>
+
 
     <!-- In Stock -->
-    <div class="rounded-xl bg-gradient-to-r from-blue-100 to-blue-200 p-6 shadow-sm">
+
+    <div
+      class="rounded-xl
+             bg-gradient-to-r
+             from-blue-100
+             to-blue-200
+             p-6
+             shadow-sm"
+    >
+
       <div class="flex items-center justify-between">
-        <div>
-          <p class="text-xs font-medium text-blue-800">In Stock</p>
-          <p class="text-2xl font-bold text-blue-900">{{ inStock }}</p>
-        </div>
-        <span class="text-3xl">✅</span>
+        <p class="text-xl font-medium text-blue-800">
+          In Stock
+        </p>
+
+        <p class="text-2xl font-bold text-blue-900">
+          {{ inStock }}
+        </p>
       </div>
+
     </div>
+
 
     <!-- Low Stock -->
-    <div class="rounded-xl bg-gradient-to-r from-yellow-100 to-yellow-200 p-6 shadow-sm">
+
+    <div
+      class="rounded-xl
+             bg-gradient-to-r
+             from-yellow-100
+             to-yellow-200
+             p-6
+             shadow-sm"
+    >
+
       <div class="flex items-center justify-between">
-        <div>
-          <p class="text-xs font-medium text-yellow-800">Low Stock</p>
-          <p class="text-2xl font-bold text-yellow-900">{{ lowStock }}</p>
-        </div>
-        <span class="text-3xl">⚠️</span>
+        <p class="text-xl font-medium text-yellow-800">
+          Low Stock
+        </p>
+
+        <p class="text-2xl font-bold text-yellow-900">
+          {{ lowStock }}
+        </p>
       </div>
+
     </div>
+
 
     <!-- Out of Stock -->
-    <div class="rounded-xl bg-gradient-to-r from-red-100 to-red-200 p-6 shadow-sm">
+
+    <div
+      class="rounded-xl
+             bg-gradient-to-r
+             from-red-100
+             to-red-200
+             p-6
+             shadow-sm"
+    >
+
       <div class="flex items-center justify-between">
-        <div>
-          <p class="text-xs font-medium text-red-800">Out of Stock</p>
-          <p class="text-2xl font-bold text-red-900">{{ outOfStock }}</p>
-        </div>
-        <span class="text-3xl">🚫</span>
+        <p class="text-xl font-medium text-red-800">
+          Out of Stock
+        </p>
+
+        <p class="text-2xl font-bold text-red-900">
+          {{ outOfStock }}
+        </p>
+
       </div>
+
     </div>
+
   </div>
 
-  <!-- Filters -->
-  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
+  <!--  Filters  -->
+
+  <div
+    class="rounded-2xl
+           border
+           border-slate-200
+           bg-white
+           p-5
+           shadow-sm"
+  >
+
+    <div
+      class="grid
+             grid-cols-1
+             gap-4
+             sm:grid-cols-2
+             lg:grid-cols-4"
+    >
+
       <!-- Search -->
+
       <div class="relative">
+
         <input
           type="text"
           placeholder="Search by name or ID..."
           [(ngModel)]="searchTerm"
           (input)="applyFilters()"
-          class="w-full rounded-xl border border-slate-300 px-4 py-2 pr-10 outline-none transition focus:border-blue-500">
-        <button
-          *ngIf="searchTerm"
-          (click)="searchTerm = ''; applyFilters()"
-          class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
-          ✕
-        </button>
+          class="w-full
+                 rounded-xl
+                 border
+                 border-slate-300
+                 px-4
+                 py-2
+                 pr-10
+                 outline-none
+                 transition
+                 focus:border-blue-500
+                 focus:ring-1
+                 focus:ring-blue-500"
+        >
+
+        @if (searchTerm) {
+
+          <button
+            type="button"
+            (click)="searchTerm = ''; applyFilters()"
+            class="absolute
+                   right-3
+                   top-1/2
+                   -translate-y-1/2
+                   text-slate-400
+                   hover:text-slate-600"
+          >
+            ✕
+          </button>
+
+        }
+
       </div>
 
-      <!-- Category Filter -->
+
+      <!-- Category -->
+
       <select
         [(ngModel)]="selectedCategory"
         (change)="applyFilters()"
-        class="rounded-xl border border-slate-300 px-4 py-2 outline-none focus:border-blue-500">
-        <option value="">All Categories</option>
-        <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+        class="rounded-xl
+               border
+               border-slate-300
+               bg-white
+               px-4
+               py-2
+               outline-none
+               focus:border-blue-500
+               focus:ring-1
+               focus:ring-blue-500"
+      >
+
+        <option value="">
+          All Categories
+        </option>
+
+        @for (category of categories; track category) {
+
+          <option [value]="category">
+            {{ category }}
+          </option>
+
+        }
+
       </select>
 
-      <!-- Status Filter -->
+
+      <!-- Status -->
+
       <select
         [(ngModel)]="selectedStatus"
         (change)="applyFilters()"
-        class="rounded-xl border border-slate-300 px-4 py-2 outline-none focus:border-blue-500">
-        <option value="">All Status</option>
-        <option value="In Stock">In Stock</option>
-        <option value="Low Stock">Low Stock</option>
-        <option value="Out of Stock">Out of Stock</option>
+        class="rounded-xl
+               border
+               border-slate-300
+               bg-white
+               px-4
+               py-2
+               outline-none
+               focus:border-blue-500
+               focus:ring-1
+               focus:ring-blue-500"
+      >
+
+        <option value="">
+          All Status
+        </option>
+
+        <option value="In Stock">
+          In Stock
+        </option>
+
+        <option value="Low Stock">
+          Low Stock
+        </option>
+
+        <option value="Out of Stock">
+          Out of Stock
+        </option>
+
       </select>
 
-      <!-- Clear Filters -->
+
+      <!-- Clear -->
+
       <button
+        type="button"
         (click)="clearFilters()"
-        class="rounded-xl border border-slate-300 px-4 py-2 transition hover:bg-slate-100">
+        class="rounded-xl
+               border
+               border-slate-300
+               px-4
+               py-2
+               transition
+               hover:bg-slate-100"
+      >
         Clear Filters
       </button>
+
     </div>
+
   </div>
 
-  <!-- Table -->
-  <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+
+  <!--  Table  -->
+
+  <div
+    class="overflow-hidden
+           rounded-2xl
+           border
+           border-slate-200
+           bg-white
+           shadow-sm"
+  >
+
     <div class="overflow-x-auto">
+
       <table class="min-w-full">
+
         <thead class="bg-slate-50">
+
           <tr>
-            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">Product</th>
-            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">ID</th>
-            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">Category</th>
-            <th class="px-6 py-4 text-right text-sm font-semibold text-slate-600">Stock</th>
-            <th class="px-6 py-4 text-right text-sm font-semibold text-slate-600">Reorder</th>
-            <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">Status</th>
-            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">Updated</th>
-            <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">Actions</th>
+
+            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">
+              Product
+            </th>
+
+            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">
+              ID
+            </th>
+
+            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">
+              Category
+            </th>
+
+            <th class="px-6 py-4 text-right text-sm font-semibold text-slate-600">
+              Stock
+            </th>
+
+            <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">
+              Reorder Level
+            </th>
+
+            <th class="px-6 py-4 text-center text-xs font-semibold text-slate-600">
+              Status
+            </th>
+
+            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">
+              Updated
+            </th>
+
+            <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">
+              Actions
+            </th>
+
           </tr>
+
         </thead>
-        <tbody>
-          @if(filteredProducts.length === 0) {
-            <tr>
-              <td colspan="8" class="py-20 text-center text-slate-500">No products found</td>
-            </tr>
-          } @else {
-            @for(product of filteredProducts; track product.id) {
-              <tr class="border-t transition hover:bg-slate-50">
-                <td class="px-6 py-4 font-medium text-slate-900">{{ product.name }}</td>
-                <td class="px-6 py-4 text-slate-500 font-mono text-sm">{{ product.id }}</td>
-                <td class="px-6 py-4 text-slate-600">{{ product.category }}</td>
-                <td class="px-6 py-4 text-right font-medium text-slate-800">{{ product.stock }}</td>
-                <td class="px-6 py-4 text-right text-slate-600">{{ product.reorderLevel }}</td>
-                <td class="px-6 py-4 text-center">
-                  <span
-                    class="rounded-full px-3 py-1 text-xs font-semibold"
-                    [ngClass]="{
-                      'bg-green-100 text-green-800': product.status === 'In Stock',
-                      'bg-yellow-100 text-yellow-800': product.status === 'Low Stock',
-                      'bg-red-100 text-red-700': product.status === 'Out of Stock'
-                    }">
-                    {{ product.status }}
-                  </span>
-                </td>
-                <td class="px-6 py-4 text-sm text-slate-500">{{ product.lastUpdated }}</td>
-                <td class="px-6 py-4">
-                  <div class="flex justify-center gap-2">
-                    <button
-                      (click)="viewProduct(product)"
-                      class="rounded-lg bg-slate-100 px-3 py-1 text-sm hover:bg-slate-200">
-                      View
-                    </button>
-                    <button
-                      (click)="adjustStock(product)"
-                      class="rounded-lg bg-blue-100 px-3 py-1 text-sm text-blue-700 hover:bg-blue-200">
-                      Adjust
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            }
-          }
-        </tbody>
+
+
+<tbody>
+
+  @if (filteredProducts.length === 0) {
+
+    <tr>
+      <td
+        colspan="8"
+        class="py-20 text-center text-slate-500">
+        No products found
+      </td>
+    </tr>
+
+  } @else {
+
+    @for (product of filteredProducts; track product._id) {
+
+      <tr class="border-t transition hover:bg-slate-50">
+
+        <!-- Product -->
+
+        <td class="px-6 py-4 font-medium text-slate-900">
+          {{ product.Product_Name }}
+        </td>
+
+
+        <!-- ID -->
+
+        <td class="px-6 py-4 text-slate-500 font-mono text-sm">
+          {{ product.Product_Card_Id }}
+        </td>
+
+
+        <!-- Category -->
+
+        <td class="px-6 py-4 text-slate-600">
+          {{ product.categoryRef?.Category_Name || '-' }}
+        </td>
+
+
+        <!-- Stock -->
+
+        <td class="px-6 py-4 text-right font-medium text-slate-800">
+          {{ product.Product_Stock }}
+        </td>
+
+
+        <!-- Reorder -->
+
+        <td class="px-6 py-4 text-center text-slate-600">
+          {{ product.Product_Reorder_Level }}
+        </td>
+
+
+        <!-- Status -->
+
+        <td class="px-5 py-4 text-center">
+
+          <span
+            class="rounded-full whitespace-nowrap px-4 py-1 text-xs font-semibold"
+            [ngClass]="{
+              'bg-green-100 text-green-800':
+                getStockStatus(product) === 'In Stock',
+
+              'bg-yellow-100 text-yellow-800':
+                getStockStatus(product) === 'Low Stock',
+
+              'bg-red-100 text-red-700':
+                getStockStatus(product) === 'Out of Stock'
+            }">
+
+            {{ getStockStatus(product) }}
+
+          </span>
+
+        </td>
+
+
+        <!-- Updated -->
+
+        <td class="px-6 py-4 text-sm text-slate-500">
+
+          {{ product.updatedAt | date:'dd/MM/yyyy' }}
+
+        </td>
+
+
+        <!-- Actions -->
+
+        <td class="px-6 py-4">
+
+          <div class="flex justify-center gap-2">
+
+            <button
+              type="button"
+              (click)="viewProduct(product)"
+              class="rounded-lg bg-slate-100 px-3 py-1 text-sm hover:bg-slate-200">
+
+              View
+
+            </button>
+
+            <button
+              type="button"
+              (click)="adjustStock(product)"
+              class="rounded-lg bg-blue-100 px-3 py-1 text-sm text-blue-700 hover:bg-blue-200">
+
+              Adjust
+
+            </button>
+
+          </div>
+
+        </td>
+
+      </tr>
+
+    }
+
+  }
+
+</tbody>
+
       </table>
+
     </div>
 
-    <!-- Total Count -->
-    <div class="flex items-center justify-between border-t px-6 py-4">
+
+    <!-- Footer -->
+
+    <div
+      class="flex
+             items-center
+             justify-between
+             border-t
+             px-6
+             py-4"
+    >
+
       <p class="text-sm text-slate-500">
-        Total Products :
-        <span class="font-semibold">{{ filteredProducts.length }}</span>
+
+        Total Products:
+
+        <span class="font-semibold">
+          {{ filteredProducts.length }}
+        </span>
+
       </p>
+
     </div>
+
   </div>
+
 </div>
+
+<app-inventory-dialog
+  [isOpen]="isDialogOpen"
+  [mode]="dialogMode"
+  [product]="selectedProduct"
+  (closed)="closeDialog()"
+  (saved)="saveProduct($event)">
+</app-inventory-dialog>
