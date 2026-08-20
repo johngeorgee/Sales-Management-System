@@ -1,4 +1,4 @@
-<div class="mx-auto max-w-7xl space-y-6">
+<div class="mx-auto max-w-7xl space-y-6 px-6 py-6">
 
     <!-- Header -->
   
@@ -106,7 +106,7 @@
                 Order ID
               </th>
   
-              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">
+              <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">
                 Customer
               </th>
   
@@ -175,15 +175,13 @@
   
                   <td class="px-6 py-4 font-medium">
   
-                    {{order.Order_Id}}
+                    {{order?.Order_Id || '-'}}
   
                   </td>
   
   
-                  <td class="px-6 py-4">
-  
-                    {{order.customerRef!.Customer_FullName}}
-  
+                  <td class="px-6 py-4 whitespace-nowrap text-center">
+                      {{order?.customerRef?.Customer_FullName || '-'}}
                   </td>
   
   
@@ -195,7 +193,7 @@
   
                   <td class="px-6 py-4 text-center">
   
-                    {{order.Type}}
+                    {{order?.Type || '-'}}
   
                   </td>
   
@@ -208,29 +206,29 @@
                       [ngClass]="{
   
                       'bg-yellow-100 text-yellow-800':
-                      order.Order_Status==='Pending Payment',
+                      order?.Order_Status==='Pending Payment',
   
                       'bg-blue-100 text-blue-800':
-                      order.Order_Status==='Processing',
+                      order?.Order_Status==='Processing',
   
                       'bg-green-100 text-green-800':
-                      order.Order_Status==='Complete',
+                      order?.Order_Status==='Complete',
   
                       'bg-gray-200 text-gray-700':
-                      order.Order_Status==='Closed'
+                      order?.Order_Status==='Closed'
   
                       }">
   
-                      {{order.Order_Status}}
+                      {{order?.Order_Status || '-'}}
   
                     </span>
   
                   </td>
   
   
-                  <td class="px-6 py-4 text-center">
+                  <td class="px-6 py-4 text-center whitespace-nowrap">
   
-                    {{order.shippingRef!.Shipping_Mode}}
+                    {{order?.shippingRef?.Shipping_Mode || '-'}}
   
                   </td>
   

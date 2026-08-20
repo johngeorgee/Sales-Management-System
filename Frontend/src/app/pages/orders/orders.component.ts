@@ -1,11 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-
 import { IOrder } from '../../core/Models/iorder';
 import { IOrderItem } from '../../core/Models/iorder-item';
-
 import { OrderService } from '../../core/services/order-service';
 import { OrderDialog } from './order-dialog/order-dialog';
 
@@ -21,11 +19,14 @@ import { OrderDialog } from './order-dialog/order-dialog';
   templateUrl: './orders.html',
   styleUrl: './orders.css'
 })
-export class OrdersComponent implements OnInit {
+export class OrdersComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.loadOrders();
   }
   constructor( private orderService: OrderService, private router: Router ) {}
+  ngOnChanges(changes: SimpleChanges): void {
+    this.loadOrders();
+  }
   orders: IOrder[] = [];
   filteredOrders: IOrder[] = [];
   searchQuery = '';
@@ -34,12 +35,12 @@ export class OrdersComponent implements OnInit {
   dateTo = '';
   loading = false;
   currentPage = 1;
-  pageSize = 20;
+  pageSize = 15;
   totalPages = 1;
    totalOrders = 0;
    orderItems?: IOrderItem[]
   // Dialog
-
+  
   isDialogOpen = false;
 
   dialogMode: 'add' | 'edit' | 'view' = 'add';
@@ -341,5 +342,4 @@ export class OrdersComponent implements OnInit {
     this.isDialogOpen = true;
   
   }
-
 }
