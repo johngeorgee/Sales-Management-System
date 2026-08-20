@@ -15,6 +15,7 @@ const { supplierRouter } = require("./Routes/suppliers.route");
 const { purchaseRouter }  = require("./Routes/purchase.route");
 const { inventoryRouter }  = require("./Routes/inventory.route");
 const { orderItemsRouter } = require("./Routes/ordersItems.route");
+const { dashboardRouter } = require("./Routes/dashboard.route");
 const cors = require("cors")
 
 
@@ -41,6 +42,7 @@ app.use("/departments", departmentRouter)
 app.use("/suppliers", supplierRouter);
 app.use("/purchases", purchaseRouter);
 app.use("/order-items", orderItemsRouter);
+app.use("/dashboard", dashboardRouter);
 app.use(notFound)
 
 //File Export
