@@ -1,0 +1,569 @@
+<div class="fixed inset-0 z-50
+         flex items-center justify-center
+         bg-black/50
+         p-4">
+
+    <div class="w-full max-w-5xl
+           max-h-[92vh]
+           overflow-hidden
+           bg-white
+           rounded-2xl
+           shadow-2xl
+           flex flex-col">
+
+        <!-- ================= Header ================= -->
+
+        <div class="flex items-center justify-between
+             px-6 py-4
+             border-b border-gray-200
+             shrink-0">
+
+            <div>
+
+                <h2 class="text-xl
+                 font-bold
+                 text-gray-800">
+                    {{ dialogTitle }}
+                </h2>
+
+
+                <p class="text-sm
+                 text-gray-500
+                 mt-1">
+                    {{ dialogDescription }}
+                </p>
+
+            </div>
+
+
+            <button type="button" (click)="closeDialog()" class="w-9 h-9
+               flex items-center justify-center
+               rounded-lg
+               text-gray-500
+               text-xl
+               hover:bg-gray-100
+               hover:text-gray-700
+               transition-colors">
+                ×
+            </button>
+
+        </div>
+
+
+        <!-- ================= Body ================= -->
+
+        <div class="p-6
+             space-y-6
+             overflow-y-auto">
+
+            <!-- ================= Purchase Information ================= -->
+
+            <section>
+
+                <div class="mb-4">
+
+                    <h3 class="text-sm
+                   font-semibold
+                   text-gray-800">
+                        Purchase Information
+                    </h3>
+
+                </div>
+
+
+                <div class="grid
+                 grid-cols-1
+                 md:grid-cols-3
+                 gap-4">
+
+                    <!-- PO Number -->
+
+                    <div>
+
+                        <label class="block
+                     text-sm
+                     font-medium
+                     text-gray-700
+                     mb-1">
+                            PO Number
+                        </label>
+
+
+                        <input type="number" [(ngModel)]="purchaseOrderBusinessId" [disabled]="isViewMode"
+                            placeholder="1001" class="w-full
+                     px-3 py-2.5
+                     border border-gray-300
+                     rounded-lg
+                     outline-none
+                     text-sm
+                     disabled:bg-gray-100
+                     disabled:text-gray-500
+                     focus:ring-2
+                     focus:ring-blue-500
+                     focus:border-blue-500" />
+
+                    </div>
+
+
+                    <!-- Supplier -->
+
+                    <div>
+
+                        <label class="block
+                     text-sm
+                     font-medium
+                     text-gray-700
+                     mb-1">
+                            Supplier
+                        </label>
+
+
+                        <select [(ngModel)]="supplierRef" (ngModelChange)="onSupplierChange()"
+                            [disabled]="isViewMode || loadingSuppliers" class="w-full
+                     px-3 py-2.5
+                     border border-gray-300
+                     rounded-lg
+                     bg-white
+                     outline-none
+                     text-sm
+                     disabled:bg-gray-100
+                     disabled:text-gray-500
+                     focus:ring-2
+                     focus:ring-blue-500
+                     focus:border-blue-500">
+
+                            <option value="">
+                                Select supplier
+                            </option>
+
+
+                            @for (
+                            supplier of suppliers;
+                            track supplier._id
+                            ) {
+
+                            <option [value]="supplier._id">
+                                {{ supplier.Supplier_Company_Name }}
+                            </option>
+
+                            }
+
+                        </select>
+
+
+                        @if (loadingSuppliers) {
+
+                        <p class="text-xs
+                       text-gray-400
+                       mt-1">
+                            Loading suppliers...
+                        </p>
+
+                        }
+
+                    </div>
+
+
+                    <!-- Delivery -->
+
+                    <div>
+
+                        <label class="block
+                     text-sm
+                     font-medium
+                     text-gray-700
+                     mb-1">
+                            Expected Delivery
+                        </label>
+
+
+                        <input type="date" [(ngModel)]="deliveryTime" [disabled]="isViewMode" class="w-full
+                     px-3 py-2.5
+                     border border-gray-300
+                     rounded-lg
+                     outline-none
+                     text-sm
+                     disabled:bg-gray-100
+                     disabled:text-gray-500
+                     focus:ring-2
+                     focus:ring-blue-500
+                     focus:border-blue-500" />
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= Items ================= -->
+
+            <section>
+
+                <div class="flex items-center
+                 justify-between
+                 mb-4">
+
+                    <div>
+
+                        <h3 class="text-sm
+                     font-semibold
+                     text-gray-800">
+                            Purchase Items
+                        </h3>
+
+                        <p class="text-xs
+                     text-gray-500
+                     mt-1">
+                            Products included in this purchase order.
+                        </p>
+
+                    </div>
+
+
+                    @if (!isViewMode) {
+
+                    <button type="button" (click)="addItem()" class="px-3 py-2
+                     rounded-lg
+                     bg-blue-50
+                     text-blue-600
+                     text-sm
+                     font-medium
+                     hover:bg-blue-100
+                     transition-colors">
+                        + Add Item
+                    </button>
+
+                    }
+
+                </div>
+
+
+                <!-- Items -->
+
+                <div class="space-y-3">
+
+                    @for (
+                    item of items;
+                    track $index;
+                    let i = $index
+                    ) {
+
+                    <div class="grid
+                     grid-cols-1
+                     md:grid-cols-[2fr_1fr_1fr_1fr_1fr_auto]
+                     gap-3
+                     items-end
+                     p-4
+                     border
+                     border-gray-200
+                     rounded-xl
+                     bg-gray-50">
+
+                        <!-- Product -->
+
+                        <div>
+
+                            <label class="block
+                         text-xs
+                         font-medium
+                         text-gray-600
+                         mb-1">
+                                Product
+                            </label>
+
+
+                            <select [(ngModel)]="item.productRef" (ngModelChange)="onProductChange(item)"
+                                [disabled]="isViewMode || !supplierRef" class="w-full
+                         px-3 py-2.5
+                         border border-gray-300
+                         rounded-lg
+                         bg-white
+                         outline-none
+                         text-sm
+                         disabled:bg-gray-100
+                         disabled:text-gray-500
+                         focus:ring-2
+                         focus:ring-blue-500
+                         focus:border-blue-500">
+
+                                <option value="">
+                                    Select product
+                                </option>
+
+
+                                @for (
+                                product of getSupplierProducts();
+                                track product._id
+                                ) {
+
+                                <option [value]="product._id">
+                                    {{ product.Product_Name }}
+                                </option>
+
+                                }
+
+                            </select>
+
+
+                            @if (
+                            loadingProducts
+                            ) {
+
+                            <p class="text-xs
+                           text-gray-400
+                           mt-1">
+                                Loading products...
+                            </p>
+
+                            }
+
+                        </div>
+
+
+                        <!-- Quantity -->
+
+                        <div>
+
+                            <label class="block
+                         text-xs
+                         font-medium
+                         text-gray-600
+                         mb-1">
+                                Quantity
+                            </label>
+
+
+                            <input type="number" min="1" [(ngModel)]="item.quantity" [disabled]="isViewMode" class="w-full
+                         px-3 py-2.5
+                         border border-gray-300
+                         rounded-lg
+                         outline-none
+                         text-sm
+                         disabled:bg-gray-100
+                         disabled:text-gray-500
+                         focus:ring-2
+                         focus:ring-blue-500
+                         focus:border-blue-500" />
+
+                        </div>
+
+
+                        <!-- Unit Price -->
+
+                        <div>
+
+                            <label class="block
+                         text-xs
+                         font-medium
+                         text-gray-600
+                         mb-1">
+                                Unit Price
+                            </label>
+
+
+                            <input type="number" min="0" [(ngModel)]="item.unitPrice" [disabled]="isViewMode" class="w-full
+                         px-3 py-2.5
+                         border border-gray-300
+                         rounded-lg
+                         outline-none
+                         text-sm
+                         disabled:bg-gray-100
+                         disabled:text-gray-500
+                         focus:ring-2
+                         focus:ring-blue-500
+                         focus:border-blue-500" />
+
+                        </div>
+
+
+                        <!-- Discount -->
+
+                        <div>
+
+                            <label class="block
+                         text-xs
+                         font-medium
+                         text-gray-600
+                         mb-1">
+                                Discount
+                            </label>
+
+
+                            <input type="number" min="0" [(ngModel)]="item.discount" [disabled]="isViewMode" class="w-full
+                         px-3 py-2.5
+                         border border-gray-300
+                         rounded-lg
+                         outline-none
+                         text-sm
+                         disabled:bg-gray-100
+                         disabled:text-gray-500
+                         focus:ring-2
+                         focus:ring-blue-500
+                         focus:border-blue-500" />
+
+                        </div>
+
+
+                        <!-- Item Total -->
+
+                        <div>
+
+                            <label class="block
+                         text-xs
+                         font-medium
+                         text-gray-600
+                         mb-1">
+                                Total
+                            </label>
+
+
+                            <div class="w-full
+                         px-3 py-2.5
+                         rounded-lg
+                         bg-white
+                         border
+                         border-gray-200
+                         text-sm
+                         font-semibold
+                         text-gray-800">
+                                {{ formatCurrency(getItemTotal(item)) }}
+                            </div>
+
+                        </div>
+
+
+                        <!-- Remove -->
+
+                        @if (!isViewMode) {
+
+                        <button type="button" (click)="removeItem(i)" [disabled]="items.length === 1" class="w-10 h-10
+                         rounded-lg
+                         text-red-500
+                         hover:bg-red-50
+                         disabled:opacity-30
+                         disabled:cursor-not-allowed
+                         transition-colors" title="Remove item">
+                            ×
+                        </button>
+
+                        }
+
+                    </div>
+
+                    }
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= Summary ================= -->
+
+            <section class="flex
+               justify-end">
+
+                <div class="w-full
+                 md:w-80
+                 p-4
+                 rounded-xl
+                 bg-gray-50
+                 border
+                 border-gray-200">
+
+                    <div class="flex
+                   justify-between
+                   text-sm
+                   mb-2">
+
+                        <span class="text-gray-500">
+                            Total Items
+                        </span>
+
+
+                        <span class="font-semibold
+                     text-gray-800">
+                            {{ totalItems }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="flex
+                   justify-between
+                   text-base
+                   pt-3
+                   border-t
+                   border-gray-200">
+
+                        <span class="font-semibold
+                     text-gray-700">
+                            Total
+                        </span>
+
+
+                        <span class="font-bold
+                     text-gray-900">
+                            {{ formatCurrency(totalPrice) }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <!-- ================= Footer ================= -->
+
+        <div class="flex
+             items-center
+             justify-end
+             gap-3
+             px-6 py-4
+             border-t
+             border-gray-200
+             shrink-0">
+
+            <!-- Close -->
+
+            <button type="button" (click)="closeDialog()" class="px-4 py-2.5
+               rounded-lg
+               border border-gray-300
+               text-gray-700
+               font-medium
+               hover:bg-gray-50
+               transition-colors">
+
+                {{ isViewMode ? 'Close' : 'Cancel' }}
+
+            </button>
+
+
+            <!-- Save -->
+
+            @if (!isViewMode) {
+
+            <button type="button" (click)="submit()" [disabled]="!isFormValid()" class="px-5 py-2.5
+                 rounded-lg
+                 bg-blue-600
+                 text-white
+                 font-medium
+                 hover:bg-blue-700
+                 disabled:bg-gray-300
+                 disabled:cursor-not-allowed
+                 transition-colors">
+
+                {{ isEditMode ? 'Update Purchase' : 'Create Purchase' }}
+
+            </button>
+
+            }
+
+        </div>
+
+    </div>
+
+</div>

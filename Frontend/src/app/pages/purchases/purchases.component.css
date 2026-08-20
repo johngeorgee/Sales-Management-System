@@ -4,10 +4,12 @@
   background-color: #f5f5f5;
   font-weight: 600;
 }
+
 /* Row hover */
 .mat-row:hover {
   background-color: #e8f0fe;
 }
+
 /* Chip styling */
 mat-chip {
   font-weight: 500;
