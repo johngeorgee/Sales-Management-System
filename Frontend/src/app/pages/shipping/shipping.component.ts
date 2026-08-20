@@ -1,4 +1,3 @@
-// shipping.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -61,6 +60,9 @@ export class ShippingComponent implements OnInit {
           this.totalPages = response.pagination.totalPages;
           this.totalShippings = response.pagination.totalShippings;
           this.loading = false;
+
+          console.log(response.data);
+          
         },
         error: (err) => {
           console.error('Error loading shipping:', err);
@@ -121,6 +123,8 @@ export class ShippingComponent implements OnInit {
     const shipping = this.shipping.find(s => s._id === id);
     if (!shipping) return;
     this.openDialog('view', shipping);
+    console.log(shipping);
+    
   }
 
   editShipping(shipping: IShipping): void {

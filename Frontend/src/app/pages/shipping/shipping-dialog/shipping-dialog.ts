@@ -1,4 +1,3 @@
-// shipping-dialog/shipping-dialog.ts
 import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';

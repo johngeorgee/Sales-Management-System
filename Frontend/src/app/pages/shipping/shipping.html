@@ -1,5 +1,5 @@
 <!-- shipping.html -->
-<div class="mx-auto max-w-7xl space-y-6">
+<div class="mx-auto max-w-7xl space-y-6 px-6 py-6">
   <!-- Header -->
   <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
     <div>
@@ -93,27 +93,27 @@
             } @else {
               @for(shipping of filteredShipping; track shipping._id) {
                 <tr class="border-t transition hover:bg-slate-50">
-                  <td class="px-6 py-4 font-medium">{{ shipping.Shipping_ID }}</td>
-                  <td class="px-6 py-4">{{ shipping.Shipping_Mode }}</td>
+                  <td class="px-6 py-4 font-medium">{{ shipping?.Shipping_ID }}</td>
+                  <td class="px-6 py-4">{{ shipping?.Shipping_Mode }}</td>
                   <td class="px-6 py-4 text-center">
                     <span
                       class="rounded-full px-3 py-1 text-xs font-semibold"
-                      [ngClass]="getStatusClass(shipping.Delivery_Status)">
+                      [ngClass]="getStatusClass(shipping!.Delivery_Status)">
                       {{ shipping.Delivery_Status }}
                     </span>
                   </td>
-                  <td class="px-6 py-4 text-center">{{ shipping.Days_for_shipping_real }}</td>
+                  <td class="px-6 py-4 text-center">{{ shipping?.Days_for_shipping_real }}</td>
                   <td class="px-6 py-4 text-center">
                     <span
                       class="rounded-full px-3 py-1 text-xs font-semibold"
                       [ngClass]="getRiskClass(shipping.Late_delivery_risk)">
-                      {{ shipping.Late_delivery_risk }}
+                      {{ shipping?.Late_delivery_risk }}
                     </span>
                   </td>
                   <td class="px-6 py-4">
                     <div class="flex justify-center gap-2">
                       <button
-                        (click)="viewShipping(shipping._id)"
+                        (click)="viewShipping(shipping!._id)"
                         class="rounded-lg bg-slate-100 px-3 py-1 text-sm hover:bg-slate-200">
                         View
                       </button>
@@ -123,7 +123,7 @@
                         Edit
                       </button>
                       <button
-                        (click)="deleteShipping(shipping._id)"
+                        (click)="deleteShipping(shipping!._id)"
                         class="rounded-lg bg-red-100 px-3 py-1 text-sm text-red-700 hover:bg-red-200">
                         Delete
                       </button>
