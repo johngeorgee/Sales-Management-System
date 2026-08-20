@@ -11,7 +11,6 @@ import { OrderDetailsComponent } from './pages/order-details/order-details.compo
 import { ShippingComponent } from './pages/shipping/shipping.component';
 import { InventoryComponent } from './pages/inventory/inventory.component';
 import { PurchasesComponent } from './pages/purchases/purchases.component';
-import { PurchaseDetailsComponent } from './pages/purchases/purchase-details/purchase-details.component';
 import { ReportsComponent } from './pages/reports/reports.component';
 
 import { UsersComponent } from './pages/users/users.component';
@@ -19,7 +18,14 @@ import { RolesComponent } from './pages/roles/roles.component';
 import { RoleDetailsComponent } from './pages/roles/role-details/role-details.component';
 import { RegisterComponent } from './pages/Auth/register/register';
 import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
 export const routes: Routes = [
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./pages/Auth/register/register')
+        .then(m => m.RegisterComponent)
+  },
   {
     path: 'login',
     loadComponent: () =>
@@ -28,10 +34,10 @@ export const routes: Routes = [
   },
 
   {
-    path: 'register',
+    path: 'unauthorized',
     loadComponent: () =>
-      import('./pages/Auth/register/register')
-        .then(m => m.RegisterComponent)
+      import('./pages/unauthorized/unauthorized')
+        .then(m => m.Unauthorized)
   },
 
   {
@@ -111,17 +117,11 @@ export const routes: Routes = [
             .then(m => m.PurchasesComponent)
       },
 
-      {
-        path: 'purchases/:id',
-        canActivate: [authGuard],
-        loadComponent: () =>
-          import('./pages/purchases/purchase-details/purchase-details.component')
-            .then(m => m.PurchaseDetailsComponent)
-      },
 
       {
         path: 'reports',
-        canActivate: [authGuard],
+        canActivate: [authGuard, roleGuard],
+        data: {roles: ['Admin', 'Manager']},
         loadComponent: () =>
           import('./pages/reports/reports.component')
             .then(m => m.ReportsComponent)
@@ -129,7 +129,8 @@ export const routes: Routes = [
 
       {
         path: 'users',
-        canActivate: [authGuard],
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['Admin']},
         loadComponent: () =>
           import('./pages/users/users.component')
             .then(m => m.UsersComponent)
@@ -137,7 +138,8 @@ export const routes: Routes = [
 
       {
         path: 'roles',
-        canActivate: [authGuard],
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['Admin']},
         loadComponent: () =>
           import('./pages/roles/roles.component')
             .then(m => m.RolesComponent)
@@ -145,16 +147,18 @@ export const routes: Routes = [
 
       {
         path: 'roles/:id',
-        canActivate: [authGuard],
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['Admin']},
         loadComponent: () =>
           import('./pages/roles/role-details/role-details.component')
             .then(m => m.RoleDetailsComponent)
       }
     ]
   },
-
   {
     path: '**',
     redirectTo: 'login'
-  }
+  },
+
+
 ];
