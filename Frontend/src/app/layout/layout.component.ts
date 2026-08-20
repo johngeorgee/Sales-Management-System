@@ -1,9 +1,9 @@
-// layout.ts
 import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Sidebar } from './sidebar/sidebar';
 import { Topbar } from './topbar/topbar';
+
 
 @Component({
   selector: 'app-layout',
@@ -15,10 +15,12 @@ import { Topbar } from './topbar/topbar';
 export class LayoutComponent implements OnInit {
   isMobile = false;
   isSidebarOpen = true;
-
   ngOnInit() {
     this.checkScreenSize();
+
   }
+
+
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
