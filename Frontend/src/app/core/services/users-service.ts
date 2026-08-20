@@ -9,25 +9,25 @@ import { map, Observable } from 'rxjs';
 export class UsersService {
   private apiUrl = 'http://localhost:3000'
 
-  constructor(private http:HttpClient) {
-    
+  constructor(private http: HttpClient) {
+
   }
 
 
 
   //Authorization Endpoints
   getUsers(): Observable<IUser[]> {
-    return this.http.get<UsersResponse>(`${this.apiUrl}/users`).pipe(map(res=> res.data))
+    return this.http.get<UsersResponse>(`${this.apiUrl}/users`).pipe(map(res => res.data))
   }
 
-  getUserById(id: string) : Observable<UserResponse>{
+  getUserById(id: string): Observable<UserResponse> {
     return this.http.get<UserResponse>(`${this.apiUrl}/users/${id}`);
   }
-  updateUser (id: string, userData: Partial<IUser>) : Observable<ApiResponse<IUser>>{
+  updateUser(id: string, userData: Partial<IUser>): Observable<ApiResponse<IUser>> {
     return this.http.put<ApiResponse<IUser>>(`${this.apiUrl}/users/${id}`, userData);
   }
 
-  deleteUser(id: string) : Observable<DeleteResponse>{
+  deleteUser(id: string): Observable<DeleteResponse> {
     return this.http.delete<DeleteResponse>(`${this.apiUrl}/user/${id}`)
   }
 
