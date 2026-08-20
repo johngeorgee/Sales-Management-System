@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema(
   {
+    
     Product_Card_Id: {
       type: Number,
       required: true,
@@ -33,10 +34,23 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: true
     },
+    Product_Stock: {
+      type: Number,
+      required: true,
+      min: 0,
+      default: 0
+    },
+    Product_Reorder_Level: {
+  type: Number,
+  required: true,
+  min: 0,
+  default: 5
+  },
     supplierRef: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Supplier",
     }, 
+
     categoryRef: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
@@ -47,5 +61,5 @@ const productSchema = new mongoose.Schema(
     timestamps: true
   }
 );
-
-module.exports = mongoose.model("Product", productSchema);
+const productModel = mongoose.model("Product", productSchema);
+module.exports = {productModel}

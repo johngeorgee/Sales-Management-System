@@ -1,10 +1,10 @@
-const Product = require("../Models/products.model");
+const {productModel} = require("../Models/products.model");
 const asyncHandler = require("../Middlewares/asyncHandler");
 
 // Create Product
 const createProduct = asyncHandler(async (req, res) => {
 
-    const product = await Product.create(req.body);
+    const product = await productModel.create(req.body);
 
     res.status(201).json({
         success: true,
@@ -17,7 +17,7 @@ const createProduct = asyncHandler(async (req, res) => {
 // Get All Products
 const getAllProducts = asyncHandler(async (req, res) => {
 
-    const products = await Product.find().populate({
+    const products = await productModel.find().populate("supplierRef").populate({
         path: "categoryRef",
         populate: {
             path: "departmentRef"
@@ -35,7 +35,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
 // Get Product By Id
 const getProductById = asyncHandler(async (req, res) => {
 
-    const product = await Product.findById(req.params.id).populate({
+    const product = await productModel.findById(req.params.id).populate({
         path: "categoryRef",
         populate: {
             path: "departmentRef"
@@ -57,7 +57,7 @@ const getProductById = asyncHandler(async (req, res) => {
 // Update Product
 const updateProduct = asyncHandler(async (req, res) => {
 
-    const product = await Product.findByIdAndUpdate(
+    const product = await productModel.findByIdAndUpdate(
         req.params.id,
         req.body,
         {
@@ -82,7 +82,7 @@ const updateProduct = asyncHandler(async (req, res) => {
 // Delete Product
 const deleteProduct = asyncHandler(async (req, res) => {
 
-    const product = await Product.findByIdAndDelete(req.params.id);
+    const product = await productModel.findByIdAndDelete(req.params.id);
 
     if (!product) {
         res.status(404);
