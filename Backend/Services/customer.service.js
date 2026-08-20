@@ -2,13 +2,13 @@
 const { Customer } = require("../Models/customer.model");
 const mongoose = require("mongoose");
 
-// ================= CREATE CUSTOMER =================
+//  CREATE CUSTOMER 
 const createCustomer = async (data) => {
     const customer = await Customer.create(data);
     return customer;
 };
 
-// ================= GET ALL CUSTOMERS WITH PAGINATION =================
+//  GET ALL CUSTOMERS WITH PAGINATION 
 const getCustomers = async (page = 1, limit = 20) => {
     const skip = (page - 1) * limit;
 
@@ -65,7 +65,7 @@ const getCustomers = async (page = 1, limit = 20) => {
     };
 };
 
-// ================= GET CUSTOMER BY ID =================
+//  GET CUSTOMER BY ID 
 const getCustomerById = async (id) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
         throw new Error("Invalid customer ID");
@@ -115,7 +115,7 @@ const getCustomerById = async (id) => {
     return customer[0];
 };
 
-// ================= UPDATE CUSTOMER =================
+//  UPDATE CUSTOMER 
 const updateCustomer = async (id, data) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
         throw new Error("Invalid customer ID");
@@ -137,7 +137,7 @@ const updateCustomer = async (id, data) => {
     return customer;
 };
 
-// ================= DELETE CUSTOMER =================
+//  DELETE CUSTOMER 
 const deleteCustomer = async (id) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
         throw new Error("Invalid customer ID");

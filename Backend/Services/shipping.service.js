@@ -19,20 +19,15 @@ const getShippings = async (page=1 ,limit = 20) => {
     }
   },
   {
-    $unwind: {
-      path: "$order",
-      preserveNullAndEmptyArrays: true
-    }
-  },
-  {
     $project: {
+      _id: 1,
       Shipping_ID: 1,
       Shipping_Mode: 1,
       Delivery_Status: 1,
       Days_for_shipping_real: 1,
       Days_for_shipment_scheduled: 1,
       Late_delivery_risk: 1,
-      Order_ID: "$order.Order_ID"
+      Order_ID: ["$order.Order_ID", 0]
     }
   },
   {
@@ -43,7 +38,9 @@ const getShippings = async (page=1 ,limit = 20) => {
   }
 ]);
 
-    return {shippings, pagination: {
+    return {
+        shippings,
+        pagination: {
         currentPage: page,
         limit,
         totalShippings: await shippingModel.countDocuments(),
