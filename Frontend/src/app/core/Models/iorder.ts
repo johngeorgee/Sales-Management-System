@@ -15,7 +15,7 @@ export interface IOrder {
     Order_Region: string;
     Market: string;
     Type: string;
-    
+
     customerRef: ICustomer;
     shippingRef: IShipping;
 
