@@ -66,13 +66,13 @@ const purchaseSchema = new mongoose.Schema(
     totalItems: {
       type: Number,
       min: 0,
-      default: 0,
+      
     },
 
     totalPrice: {
       type: Number,
       min: 0,
-      default: 0,
+      
     },
 
     status: {
@@ -95,5 +95,5 @@ const purchaseSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
-module.exports = mongoose.model("Purchase", purchaseSchema);
+const purchaseModel = mongoose.model("Purchase", purchaseSchema);
+module.exports = {purchaseModel}

@@ -5,6 +5,7 @@ const {
   getAllPurchases,
   getPurchaseById,
   updatePurchase,
+  updatePurchaseStatus,
   deletePurchase,
 } = require("../Controllers/purchase.controller");
 
@@ -17,6 +18,8 @@ purchaseRouter.get("/", getAllPurchases);
 purchaseRouter.get("/:id", getPurchaseById);
 
 purchaseRouter.put("/:id", updatePurchase);
+
+purchaseRouter.patch("/:id/status", updatePurchaseStatus);
 
 purchaseRouter.delete("/:id", deletePurchase);
 
