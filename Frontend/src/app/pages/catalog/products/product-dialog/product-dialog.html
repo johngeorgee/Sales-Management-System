@@ -1,4 +1,3 @@
-<!-- product-dialog/product-dialog.html -->
 @if (isOpen) {
   <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
     <div class="w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
@@ -18,11 +17,7 @@
       <div class="max-h-[70vh] overflow-y-auto p-6">
         @if (mode === 'view') {
           <div class="space-y-6">
-            <div class="flex justify-center">
-              <div class="h-32 w-32 overflow-hidden rounded-lg border border-gray-200 bg-gray-100 flex items-center justify-center">
-                <img [src]="product?.Product_Image" [alt]="product?.Product_Name" class="h-full w-full object-cover">
-              </div>
-            </div>
+
             <div class="grid grid-cols-2 gap-4">
               <div><p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Product Name</p><p class="font-medium text-slate-900">{{ product?.Product_Name }}</p></div>
               <div><p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Product ID</p><p class="text-slate-900">{{ product?.Product_Card_Id }}</p></div>

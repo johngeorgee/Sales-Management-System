@@ -1,4 +1,3 @@
-// products.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -56,7 +55,7 @@ export class ProductsComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading products:', error);
-        this.loading = false;
+        this.loading = true;
       }
     });
   }

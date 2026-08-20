@@ -14,7 +14,7 @@ import { CategoryService } from '../../../core/services/category-service';
   imports: [
     CommonModule,
     FormsModule,
-    CategoryDialog  // ✅ Added missing import
+    CategoryDialog  
   ],
   templateUrl: './categories.html',
   styleUrl: './categories.css'
@@ -23,7 +23,7 @@ export class CategoriesComponent implements OnInit {
   products: IProduct[] = [];
   categories: ICategories[] = [];
   filteredCategories: ICategories[] = [];
-  loading = false;  // ✅ Fixed: changed from 'any' to 'false'
+  loading = false;  
   searchQuery = '';
 
   // Dialog properties
