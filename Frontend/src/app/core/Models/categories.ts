@@ -4,6 +4,6 @@ export interface ICategories {
     _id: string;
     Category_Id: number;
     Category_Name: string;
-    Department_Id: Number;
+    Department_Id: number;
     departmentRef: IDepartments;
 }
