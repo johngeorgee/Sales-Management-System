@@ -1,3 +1,4 @@
+
 const mongoose = require("mongoose");
 
 const supplierSchema = new mongoose.Schema(
@@ -15,7 +16,7 @@ const supplierSchema = new mongoose.Schema(
     },
 
     Contact_Info: {
-      Nickname: {
+      Contact_Person: {
         type: String,
         required: true,
         trim: true,
@@ -36,6 +37,49 @@ const supplierSchema = new mongoose.Schema(
       },
     },
 
+    Address: {
+      Street: {
+        type: String,
+        trim: true,
+      },
+
+      City: {
+        type: String,
+        trim: true,
+      },
+
+      State: {
+        type: String,
+        trim: true,
+      },
+
+      Country: {
+        type: String,
+        trim: true,
+      },
+
+      ZipCode: {
+        type: String,
+        trim: true,
+      },
+    },
+
+    Payment_Terms: {
+      type: String,
+      enum: [
+        "Cash",
+        "Net 15",
+        "Net 30",
+        "Net 60",
+      ],
+      default: "Net 30",
+    },
+
+    Notes: {
+      type: String,
+      trim: true,
+    },
+
     Status: {
       type: String,
       enum: ["Active", "Inactive"],
@@ -46,5 +90,6 @@ const supplierSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+const supplierModel = mongoose.model("Supplier", supplierSchema);
+module.exports = {supplierModel}
 
-module.exports = mongoose.model("Supplier", supplierSchema);

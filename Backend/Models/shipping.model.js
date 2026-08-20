@@ -14,9 +14,7 @@ const shippingSchema = new Schema({
             values: ["Standard Class", "First Class","Second Class", "Same Day", "Shipping Cancelled"] 
         }
      }, 
-     Days_for_shipment_scheduled : { type: Number, min: 2 
-
-     },
+     Days_for_shipment_scheduled : { type: Number, min: 2  },
     Days_for_shipping_real : {
          type: Number, min: 1
      }, 
