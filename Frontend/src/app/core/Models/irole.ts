@@ -1,1 +1,1 @@
-export interface IRole {}
+export interface IRole { }
