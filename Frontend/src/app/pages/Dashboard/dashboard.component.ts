@@ -1,194 +1,366 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+// pages/Dashboard/dashboard.component.ts
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, ChangeDetectorRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatTableModule } from '@angular/material/table';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatChipsModule } from '@angular/material/chips';
-import { BaseChartDirective } from 'ng2-charts';
-import { ChartConfiguration, ChartOptions, ChartData } from 'chart.js';
+import { FormsModule } from '@angular/forms';
 import { Chart, registerables } from 'chart.js';
+import { DashboardService } from '../../core/services/dashboard-service';
+import { DashboardData, SalesOverTime, RecentOrder, LowStockProduct } from '../../core/Models/Dashboard.model';
 Chart.register(...registerables);
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatCardModule,
-    MatIconModule,
-    MatButtonModule,
-    MatTableModule,
-    MatProgressBarModule,
-    MatChipsModule,
-
-  ],
+  imports: [CommonModule, FormsModule],
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.css'
+  styleUrls: ['./dashboard.css']
 })
-export class DashboardComponent implements OnInit, AfterViewInit {
+export class DashboardComponent implements OnInit, AfterViewInit, AfterViewChecked {
+  @ViewChild('salesChart') salesChartCanvas!: ElementRef;
+  @ViewChild('ordersChart') ordersChartCanvas!: ElementRef;
+
+  dashboardData: DashboardData | null = null;
+  loading = false;
+  error = '';
+
+  salesChart: Chart | null = null;
+  ordersChart: Chart | null = null;
+  private chartInitialized = false;
+  recentOrders: RecentOrder[] = [];
+  lowStockProducts: LowStockProduct[] = [];
+
+  // Status mapping
+  statusMap: { [key: string]: string } = {
+    'COMPLETE': 'Complete',
+    'CLOSED': 'Closed',
+    'PROCESSING': 'Processing',
+    'PENDING_PAYMENT': 'Pending Payment',
+    'PENDING': 'Pending',
+    'ON_HOLD': 'On Hold',
+    'CANCELED': 'Cancelled',
+    'SUSPECTED_FRAUD': 'Suspected Fraud',
+    'PAYMENT_REVIEW': 'Payment Review'
+  };
+
+  statusColors: { [key: string]: string } = {
+    'COMPLETE': '#22C55E',
+    'CLOSED': '#6B7280',
+    'PROCESSING': '#3B82F6',
+    'PENDING_PAYMENT': '#F59E0B',
+    'PENDING': '#F59E0B',
+    'ON_HOLD': '#8B5CF6',
+    'CANCELED': '#EF4444',
+    'SUSPECTED_FRAUD': '#EC4899',
+    'PAYMENT_REVIEW': '#F97316'
+  };
+
+  statusClasses: { [key: string]: string } = {
+    'COMPLETE': 'bg-green-100 text-green-800',
+    'CLOSED': 'bg-gray-100 text-gray-800',
+    'PROCESSING': 'bg-blue-100 text-blue-800',
+    'PENDING_PAYMENT': 'bg-amber-100 text-amber-800',
+    'PENDING': 'bg-amber-100 text-amber-800',
+    'ON_HOLD': 'bg-purple-100 text-purple-800',
+    'CANCELED': 'bg-red-100 text-red-800',
+    'SUSPECTED_FRAUD': 'bg-pink-100 text-pink-800',
+    'PAYMENT_REVIEW': 'bg-orange-100 text-orange-800'
+  };
+
+  constructor(
+    private dashboardService: DashboardService,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit(): void {
+    this.loadDashboardData();
+  }
+
   ngAfterViewInit(): void {
+    // Charts will be initialized after data loads
+  }
+  ngAfterViewChecked(): void {
+    // Initialize charts only once after view is stable
+    if (this.dashboardData && !this.chartInitialized) {
+      this.initCharts();
+      this.chartInitialized = true;
+    }
+  }
+  loadDashboardData(): void {
+    this.loading = true;
+    this.error = '';
+    this.chartInitialized = false;
+    this.dashboardService.getDashboardData().subscribe({
+      next: (response) => {
+        this.dashboardData = response.data;
+        this.recentOrders = response.data.recentOrders || [];
+        this.lowStockProducts = response.data.lowStockProducts || [];
+        this.loading = false;
+
+        // ✅ Use setTimeout with a delay to ensure DOM is rendered
+        setTimeout(() => {
+          this.initCharts();
+        }, 300);
+      },
+      error: (err) => {
+        console.error('Error loading dashboard:', err);
+        this.error = 'Failed to load dashboard data';
+        this.loading = false;
+      }
+    });
+  }
+
+  // ✅ Combined chart initialization
+  initCharts(): void {
     this.initSalesChart();
     this.initOrdersChart();
   }
-  ngOnInit(): void {
-    throw new Error('Method not implemented.');
-  }
-  @ViewChild('salesChart') salesChartCanvas!: ElementRef;
-  @ViewChild('ordersChart') ordersChartCanvas!: ElementRef;
-  // --- 3. Sales Overview Chart Data ---
-  salesChartOptions: ChartOptions<'line'> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    elements: {
-      line: { tension: 0.4 },
-      point: { radius: 4, hitRadius: 10, hoverRadius: 6 }
-    },
-    scales: {
-      x: {
-        grid: { display: false }
-      },
-      y: {
-        beginAtZero: true,
-        grid: { color: '#f3f4f6' }, // tailwind gray-100
-        border: { display: false }
-      }
-    },
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        backgroundColor: 'rgba(17, 24, 39, 0.9)', // gray-900
-        titleFont: { size: 13 },
-        bodyFont: { size: 13 },
-        padding: 10,
-        cornerRadius: 4,
-        displayColors: false
-      }
-    }
-  };
 
-  salesChartData: ChartData<'line'> = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-    datasets: [
-      {
-        data: [12000, 14500, 13200, 16800, 19000, 17800, 21400, 22500, 20800, 24100, 26300, 28500],
-        label: 'Sales ($)',
-        backgroundColor: 'rgba(59, 130, 246, 0.1)', // blue-500 with opacity
-        borderColor: '#3b82f6', // blue-500
-        pointBackgroundColor: '#ffffff',
-        pointBorderColor: '#3b82f6',
-        pointBorderWidth: 2,
-        fill: true,
-      }
-    ]
-  };
-
-
-  // --- 4. Orders Overview Chart Data ---
-  ordersChartOptions: ChartOptions<'doughnut'> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    cutout: '75%',
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        backgroundColor: 'rgba(17, 24, 39, 0.9)',
-        bodyFont: { size: 13 },
-        padding: 10,
-        cornerRadius: 4,
-      }
-    }
-  };
-
-  ordersChartData: ChartData<'doughnut'> = {
-    labels: ['Completed', 'Processing', 'Pending', 'Cancelled'],
-    datasets: [
-      {
-        data: [680, 240, 180, 48],
-        backgroundColor: [
-          '#22c55e', // green-500
-          '#3b82f6', // blue-500
-          '#f59e0b', // amber-500
-          '#ef4444'  // red-500
-        ],
-        borderWidth: 0,
-        hoverOffset: 4
-      }
-    ]
-  };
-
-  // --- 6. Recent Orders Table Data ---
-  recentOrdersColumns: string[] = ['orderId', 'customer', 'date', 'amount', 'status'];
-  recentOrders = [
-    { id: '#ORD-7352', customer: 'Acme Corp', date: 'Aug 02, 2026', amount: '$1,250.00', status: 'Completed' },
-    { id: '#ORD-7351', customer: 'Global Tech', date: 'Aug 02, 2026', amount: '$3,420.50', status: 'Processing' },
-    { id: '#ORD-7350', customer: 'Sarah Jenkins', date: 'Aug 01, 2026', amount: '$145.00', status: 'Completed' },
-    { id: '#ORD-7349', customer: 'Nexus Ltd', date: 'Aug 01, 2026', amount: '$5,100.00', status: 'Pending' },
-    { id: '#ORD-7348', customer: 'Emma Watson', date: 'Jul 31, 2026', amount: '$85.00', status: 'Cancelled' },
-    { id: '#ORD-7347', customer: 'TechFlow', date: 'Jul 30, 2026', amount: '$920.00', status: 'Completed' },
-  ];
-
-  // --- 7. Low Stock Products Data ---
-  lowStockColumns: string[] = ['product', 'stock', 'status'];
-  lowStockProducts = [
-    { name: 'Wireless Headphones', category: 'Electronics', stock: 2, status: 'Critical' },
-    { name: 'Smart Watch Pro', category: 'Electronics', stock: 5, status: 'Low Stock' },
-    { name: 'Ergonomic Chair', category: 'Furniture', stock: 3, status: 'Critical' },
-    { name: 'Mechanical Keyboard', category: 'Electronics', stock: 7, status: 'Low Stock' },
-    { name: 'Webcam 4K', category: 'Electronics', stock: 8, status: 'Low Stock' },
-  ];
-  private initSalesChart(): void {
+  initSalesChart(): void {
     const canvas = this.salesChartCanvas?.nativeElement;
-    if (!canvas) return;
-    new Chart(canvas, {
-      type: 'line',
-      data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-        datasets: [{
-          label: 'Sales',
-          data: [3000, 4500, 3800, 5200, 4800, 6000, 5500, 7000, 6500, 8000, 7500, 9000],
-          borderColor: '#3B82F6',
-          backgroundColor: 'rgba(59, 130, 246, 0.1)',
-          tension: 0.4
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false
+    if (!canvas) {
+      console.warn('Sales chart canvas not found');
+      return;
+    }
+
+    // Destroy existing chart if any
+    if (this.salesChart) {
+      this.salesChart.destroy();
+      this.salesChart = null;
+    }
+
+    const salesData = this.dashboardData?.salesOverTime || [];
+    
+    let labels: string[] = [];
+    let data: number[] = [];
+
+    if (salesData.length > 0) {
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      labels = salesData.map(item => monthNames[item.month - 1] + ' ' + item.year);
+      data = salesData.map(item => item.sales);
+    } else {
+      // Fallback data - last 12 months with zeros
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const currentDate = new Date();
+      const currentMonth = currentDate.getMonth();
+      const currentYear = currentDate.getFullYear();
+      
+      for (let i = 11; i >= 0; i--) {
+        let month = currentMonth - i;
+        let year = currentYear;
+        if (month < 0) {
+          month += 12;
+          year--;
+        }
+        labels.push(monthNames[month] + ' ' + year);
+        data.push(0);
+      }
+    }
+
+    try {
+      this.salesChart = new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Sales ($)',
+            data: data,
+            borderColor: '#3B82F6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: '#ffffff',
+            pointBorderColor: '#3B82F6',
+            pointBorderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(17, 24, 39, 0.9)',
+              titleFont: { size: 13 },
+              bodyFont: { size: 13 },
+              padding: 10,
+              cornerRadius: 4,
+              displayColors: false,
+              callbacks: {
+                label: function(context) {
+                  return '$' + context!.parsed!.y!.toLocaleString(undefined, { minimumFractionDigits: 2 });
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false }
+            },
+            y: {
+              beginAtZero: true,
+              grid: { color: '#f3f4f6' },
+              border: { display: false },
+              ticks: {
+                callback: function(value) {
+                  return '$' + value.toLocaleString();
+                }
+              }
+            }
           }
         }
-      }
-    });
+      });
+      
+      // ✅ Force change detection
+      this.cdr.detectChanges();
+      
+    } catch (error) {
+      console.error('Error creating sales chart:', error);
+    }
   }
 
-  private initOrdersChart(): void {
+  initOrdersChart(): void {
     const canvas = this.ordersChartCanvas?.nativeElement;
-    if (!canvas) return;
+    if (!canvas) {
+      console.warn('Orders chart canvas not found');
+      return;
+    }
 
-    new Chart(canvas, {
-      type: 'doughnut',
-      data: {
-        labels: ['Completed', 'Processing', 'Pending', 'Cancelled'],
-        datasets: [{
-          data: [680, 240, 180, 48],
-          backgroundColor: ['#22C55E', '#3B82F6', '#F59E0B', '#EF4444']
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: '70%',
-        plugins: {
-          legend: {
-            display: false
+    // Destroy existing chart if any
+    if (this.ordersChart) {
+      this.ordersChart.destroy();
+      this.ordersChart = null;
+    }
+
+    const orderStatus = this.dashboardData?.orderStatus || [];
+    
+    // Filter out null/undefined statuses
+    const validStatuses = orderStatus.filter(item => item.status !== null && item.status !== undefined);
+    
+    let labels: string[] = [];
+    let data: number[] = [];
+    let colors: string[] = [];
+
+    if (validStatuses.length > 0) {
+      // Sort by count descending
+      const sorted = [...validStatuses].sort((a, b) => b.count - a.count);
+      
+      labels = sorted.map(item => this.statusMap[item.status] || item.status);
+      data = sorted.map(item => item.count);
+      colors = sorted.map(item => this.statusColors[item.status] || '#9CA3AF');
+    } else {
+      labels = ['No Data'];
+      data = [1];
+      colors = ['#9CA3AF'];
+    }
+
+    try {
+      this.ordersChart = new Chart(canvas, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: colors,
+            borderWidth: 0,
+            hoverOffset: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '75%',
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(17, 24, 39, 0.9)',
+              bodyFont: { size: 13 },
+              padding: 10,
+              cornerRadius: 4
+            }
           }
         }
-      }
-    });
+      });
+      
+      // ✅ Force change detection
+      this.cdr.detectChanges();
+      
+    } catch (error) {
+      console.error('Error creating orders chart:', error);
+    }
   }
 
+  // ===================== STATUS HELPER METHODS =====================
+
+  getDisplayStatus(status: string): string {
+    return this.statusMap[status] || status || 'Unknown';
+  }
+
+  getStatusClass(status: string): string {
+    return this.statusClasses[status] || 'bg-gray-100 text-gray-800';
+  }
+
+  // ===================== ORDER COUNT METHODS =====================
+
+  getTotalOrders(): number {
+    return this.dashboardData?.summary?.totalOrders || 0;
+  }
+
+  getOrderCountByStatus(status: string): number {
+    const found = this.dashboardData?.orderStatus?.find(s => s.status === status);
+    return found?.count || 0;
+  }
+
+  getCompletedOrders(): number {
+    return this.getOrderCountByStatus('COMPLETE');
+  }
+
+  getProcessingOrders(): number {
+    return this.getOrderCountByStatus('PROCESSING');
+  }
+
+  getPendingOrders(): number {
+    return this.getOrderCountByStatus('PENDING_PAYMENT') + this.getOrderCountByStatus('PENDING');
+  }
+
+  getCancelledOrders(): number {
+    return this.getOrderCountByStatus('CANCELED');
+  }
+
+  // ===================== FORMATTING METHODS =====================
+
+  formatCurrency(value: number): string {
+    return '$' + (value || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  formatDate(dateString: string): string {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+  }
+
+  getStockStatusClass(stock: number): string {
+    if (stock <= 0) return 'bg-red-100 text-red-800';
+    if (stock <= 3) return 'bg-amber-100 text-amber-800';
+    return 'bg-green-100 text-green-800';
+  }
+
+  getStockStatus(stock: number): string {
+    if (stock <= 0) return 'Critical';
+    if (stock <= 3) return 'Low Stock';
+    return 'In Stock';
+  }
+
+  getInventoryPercentage(value: number, total: number): number {
+    if (total === 0) return 0;
+    return (value / total) * 100;
+  }
+
+  // ===================== EXPORT METHODS =====================
+
+  exportReport(): void {
+    console.log('Export report clicked');
+  }
+
+  printReport(): void {
+    window.print();
+  }
 }
